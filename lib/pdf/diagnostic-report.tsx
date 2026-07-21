@@ -1,8 +1,13 @@
-import { Document, Page, View, Text, StyleSheet, Svg, Circle, Rect } from "@react-pdf/renderer";
+import path from "node:path";
+import { Document, Page, View, Text, StyleSheet, Image } from "@react-pdf/renderer";
 import type { RecommendationResult } from "@/lib/recommendation-engine";
 import type { DiagnosticAnswers } from "@/lib/types";
 import { NUM_PERSONAS_OPTIONS, TIEMPO_DISPONIBLE_OPTIONS } from "@/lib/types";
 import { getTrackById } from "@/lib/course-catalog";
+
+const LOGO_LOCKUP_DARK = path.join(process.cwd(), "public/brand/logo-lockup.png");
+const LOGO_LOCKUP_LIGHT = path.join(process.cwd(), "public/brand/logo-lockup-light.png");
+const LOGO_ASPECT = 408 / 124;
 
 const COLORS = {
   bg: "#070b14",
@@ -103,31 +108,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function LogoIconPdf({ background, size = 22 }: { background: string; size?: number }) {
-  const half = size / 2;
-  return (
-    <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <Circle cx={half} cy={half} r={half} fill={COLORS.accent} />
-      <Rect x={half} y={half} width={half} height={half} fill={background} />
-    </Svg>
-  );
-}
-
-function LogoLockup({ variant }: { variant: "light" | "dark" }) {
-  const wordmarkColor = variant === "light" ? COLORS.textLight : COLORS.wordmarkDark;
-  const background = variant === "light" ? COLORS.bg : COLORS.bodyBg;
-
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-      <LogoIconPdf background={background} />
-      <View>
-        <Text style={{ fontSize: 13, fontWeight: 700, color: wordmarkColor }}>Referente</Text>
-        <Text style={{ fontSize: 6, letterSpacing: 2, textTransform: "uppercase", color: wordmarkColor }}>
-          Academia
-        </Text>
-      </View>
-    </View>
-  );
+function LogoLockup({ variant, height = 16 }: { variant: "light" | "dark"; height?: number }) {
+  const src = variant === "light" ? LOGO_LOCKUP_LIGHT : LOGO_LOCKUP_DARK;
+  // eslint-disable-next-line jsx-a11y/alt-text -- this is @react-pdf/renderer's Image (PDF output), not an HTML/next <img>; it has no alt prop.
+  return <Image src={src} style={{ width: height * LOGO_ASPECT, height }} />;
 }
 
 function PageFooter({ page }: { page: number }) {
