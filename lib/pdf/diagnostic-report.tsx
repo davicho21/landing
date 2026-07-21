@@ -126,6 +126,11 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     flex: 1,
   },
+  cardTitleBlock: {
+    fontSize: 12,
+    fontWeight: 700,
+    marginBottom: 6,
+  },
   cardMeta: {
     fontSize: 10,
     color: COLORS.bodyMuted,
@@ -456,9 +461,9 @@ export function DiagnosticReportDocument({
         <PageFooter page={4} />
       </Page>
 
-      {/* Página 5: Detalle de cursos */}
+      {/* Página 5: Qué aprenderán */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Detalle" title="Cursos recomendados en profundidad" />
+        <BodyPageHeader eyebrow="Contenido" title="Qué van a aprender" />
 
         {[cursoPrincipal, ...cursosComplementarios].map((curso, index) => (
           <View key={curso.id} style={styles.card} wrap={false}>
@@ -466,20 +471,20 @@ export function DiagnosticReportDocument({
               style={[styles.cardBar, { backgroundColor: index === 0 ? COLORS.accent : COLORS.accent2 }]}
             />
             <View style={styles.cardBody}>
-              <View style={styles.cardHeadRow}>
-                <Text style={styles.cardTitle}>
-                  {index + 1}. {curso.nombre}
-                </Text>
-                <Text style={styles.pill}>{curso.duracionHoras}h</Text>
-              </View>
-              <Text style={{ fontSize: 10 }}>Modalidad: {curso.modalidad}</Text>
-              <Text style={{ fontSize: 10 }}>A quién beneficia: {curso.beneficiario}</Text>
+              <Text style={styles.cardTitleBlock}>
+                {index + 1}. {curso.nombre}
+              </Text>
+              {curso.temario.map((punto) => (
+                <View key={punto} style={{ flexDirection: "row", gap: 6, marginTop: 3 }}>
+                  <Text style={{ fontSize: 10, color: COLORS.bodyMuted }}>•</Text>
+                  <Text style={{ fontSize: 10, color: COLORS.bodyMuted, flex: 1, lineHeight: 1.4 }}>
+                    {punto}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
         ))}
-
-        <Text style={styles.sectionTitle}>Nota sobre la modalidad para tu equipo</Text>
-        <Text style={{ fontSize: 11, lineHeight: 1.5 }}>{notaModalidad}</Text>
 
         <PageFooter page={5} />
       </Page>
