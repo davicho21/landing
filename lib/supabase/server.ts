@@ -24,5 +24,4 @@ export type LeadRow = {
   email: string;
   ruta_recomendada: string;
   cursos_recomendados: unknown;
-  email_sent: boolean;
 };

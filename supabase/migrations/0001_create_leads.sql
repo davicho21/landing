@@ -9,8 +9,7 @@ create table if not exists public.leads (
   objetivo text not null,
   email text not null,
   ruta_recomendada text not null,
-  cursos_recomendados jsonb not null default '[]'::jsonb,
-  email_sent boolean not null default false
+  cursos_recomendados jsonb not null default '[]'::jsonb
 );
 
 alter table public.leads enable row level security;

@@ -5,7 +5,6 @@ import { validateAllAnswers, isValid } from "@/lib/validate-answers";
 import { getRecommendation } from "@/lib/recommendation-engine";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { DiagnosticReportDocument } from "@/lib/pdf/diagnostic-report";
-import { sendDiagnosticReport } from "@/lib/email/send-report";
 
 export const runtime = "nodejs";
 
@@ -51,7 +50,6 @@ export async function POST(request: Request) {
       email: answers.email,
       ruta_recomendada: recommendation.track.id,
       cursos_recomendados: [recommendation.cursoPrincipal, ...recommendation.cursosComplementarios],
-      email_sent: false,
     })
     .select("id")
     .single();
@@ -64,15 +62,16 @@ export async function POST(request: Request) {
     <DiagnosticReportDocument answers={answers} recommendation={recommendation} generatedAt={new Date()} />
   );
 
-  let emailSent = false;
   try {
     const pdfBuffer = await renderToBuffer(reportDocument);
-    await sendDiagnosticReport({ to: answers.email, pdfBuffer });
-    emailSent = true;
-    await supabase.from("leads").update({ email_sent: true }).eq("id", lead.id);
+    return NextResponse.json({
+      saved: true,
+      pdfGenerated: true,
+      pdfBase64: pdfBuffer.toString("base64"),
+      fileName: "informe-diagnostico-academia-referente.pdf",
+    });
   } catch (error) {
-    console.error("No se pudo generar o enviar el PDF del lead", lead.id, error);
+    console.error("No se pudo generar el PDF del lead", lead.id, error);
+    return NextResponse.json({ saved: true, pdfGenerated: false });
   }
-
-  return NextResponse.json({ saved: true, emailSent });
 }

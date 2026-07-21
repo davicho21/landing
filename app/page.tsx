@@ -20,8 +20,8 @@ export default function Home() {
             <span className="text-brand-accent">rendir al máximo?</span>
           </h1>
           <p className="max-w-xl text-brand-muted">
-            Responde 6 preguntas rápidas y recibe por correo un informe con recomendaciones y una ruta de
-            formación sugerida para tu equipo, elaborado por Academia Referente.
+            Responde 6 preguntas rápidas y descarga un informe con recomendaciones y una ruta de formación
+            sugerida para tu equipo, elaborado por Academia Referente.
           </p>
         </div>
 

@@ -1,15 +1,27 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
-export function Confirmation({ emailSent, email }: { emailSent: boolean; email: string }) {
-  if (emailSent) {
+export function Confirmation({
+  pdfGenerated,
+  downloadUrl,
+  fileName,
+}: {
+  pdfGenerated: boolean;
+  downloadUrl: string | null;
+  fileName: string;
+}) {
+  if (pdfGenerated && downloadUrl) {
     return (
       <div className="flex flex-col items-center gap-4 text-center">
         <Badge>Diagnóstico completo</Badge>
-        <h2 className="text-2xl font-semibold">Revisa tu correo</h2>
+        <h2 className="text-2xl font-semibold">Tu informe está listo</h2>
         <p className="max-w-md text-brand-muted">
-          Enviamos tu informe de recomendaciones a <span className="text-brand-text">{email}</span>. Si no lo ves
-          en unos minutos, revisa la carpeta de spam.
+          Guardamos tus respuestas. Descarga tu informe con recomendaciones y una ruta de formación sugerida
+          para tu equipo.
         </p>
+        <a href={downloadUrl} download={fileName}>
+          <Button>Descargar informe (PDF)</Button>
+        </a>
       </div>
     );
   }
@@ -17,10 +29,10 @@ export function Confirmation({ emailSent, email }: { emailSent: boolean; email: 
   return (
     <div className="flex flex-col items-center gap-4 text-center">
       <Badge className="bg-brand-accent-2 text-[#0a1030]">Respuestas guardadas</Badge>
-      <h2 className="text-2xl font-semibold">Tuvimos un problema enviando el correo</h2>
+      <h2 className="text-2xl font-semibold">Tuvimos un problema generando tu informe</h2>
       <p className="max-w-md text-brand-muted">
-        Guardamos tus respuestas correctamente, pero no pudimos enviar el PDF a <span className="text-brand-text">{email}</span>.
-        Nuestro equipo se pondrá en contacto contigo directamente.
+        Guardamos tus respuestas correctamente, pero no pudimos generar el PDF en este momento. Nuestro equipo
+        se pondrá en contacto contigo directamente.
       </p>
     </div>
   );

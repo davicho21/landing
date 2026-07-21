@@ -148,9 +148,10 @@ export function StepObjetivo({ answers, errors, onChange }: StepProps) {
 export function StepEmail({ answers, errors, onChange }: StepProps) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿A qué correo enviamos tu informe?</h2>
+      <h2 className="text-2xl font-semibold">¿Cuál es tu correo electrónico?</h2>
       <p className="text-sm text-brand-muted">
-        Te enviaremos un PDF con recomendaciones y una ruta de formación sugerida para tu equipo.
+        Lo usamos para identificarte como lead y darte seguimiento. Tu informe con recomendaciones y una ruta
+        de formación sugerida quedará listo para descargar al final.
       </p>
       <input
         type="email"

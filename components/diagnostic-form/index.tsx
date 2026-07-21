@@ -17,6 +17,7 @@ import {
 import { Confirmation } from "./confirmation";
 
 const TOTAL_STEPS = 6;
+const DEFAULT_FILE_NAME = "informe-diagnostico-academia-referente.pdf";
 
 const STEP_COMPONENTS = [
   StepNecesidad,
@@ -27,13 +28,25 @@ const STEP_COMPONENTS = [
   StepEmail,
 ];
 
-type SubmitStatus = "idle" | "submitting" | "success" | "partial" | "error";
+type SubmitStatus = "idle" | "submitting" | "done" | "error";
+
+function base64ToObjectUrl(base64: string): string {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+}
 
 export function DiagnosticForm() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<DiagnosticAnswers>(EMPTY_ANSWERS);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [pdfGenerated, setPdfGenerated] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [fileName, setFileName] = useState(DEFAULT_FILE_NAME);
 
   function handleChange<K extends keyof DiagnosticAnswers>(field: K, value: DiagnosticAnswers[K]) {
     setAnswers((prev) => ({ ...prev, [field]: value }));
@@ -55,7 +68,14 @@ export function DiagnosticForm() {
         return;
       }
 
-      setStatus(data.emailSent ? "success" : "partial");
+      if (data.pdfGenerated && typeof data.pdfBase64 === "string") {
+        setDownloadUrl(base64ToObjectUrl(data.pdfBase64));
+        setFileName(data.fileName ?? DEFAULT_FILE_NAME);
+        setPdfGenerated(true);
+      } else {
+        setPdfGenerated(false);
+      }
+      setStatus("done");
     } catch {
       setStatus("error");
     }
@@ -80,10 +100,10 @@ export function DiagnosticForm() {
     if (step > 1) setStep(step - 1);
   }
 
-  if (status === "success" || status === "partial") {
+  if (status === "done") {
     return (
       <Card className="w-full max-w-xl p-8">
-        <Confirmation emailSent={status === "success"} email={answers.email} />
+        <Confirmation pdfGenerated={pdfGenerated} downloadUrl={downloadUrl} fileName={fileName} />
       </Card>
     );
   }
@@ -107,7 +127,7 @@ export function DiagnosticForm() {
             Atrás
           </Button>
           <Button onClick={handleNext} disabled={status === "submitting"}>
-            {status === "submitting" ? "Enviando..." : step === TOTAL_STEPS ? "Enviar" : "Siguiente"}
+            {status === "submitting" ? "Generando..." : step === TOTAL_STEPS ? "Enviar" : "Siguiente"}
           </Button>
         </div>
       </div>
