@@ -69,3 +69,16 @@ Basado en: `spec.md` (confirmado el 2026-07-21)
 ## Publicación
 
 Al llegar a la Fase 5: commit + push de la implementación a la rama `claude/academia-referentes-landing-xlns7d` → confirmación explícita del usuario para (a) crear el proyecto Supabase y aplicar la migración, (b) crear el proyecto Vercel y hacer el primer deploy, (c) configurar las variables de entorno (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`). Se verifica el preview deployment contra los criterios de aceptación críticos antes de considerar el trabajo terminado.
+
+### Estado real de la publicación (2026-07-21)
+
+- [x] Proyecto Supabase creado (`academia-referentes-landing`, `lqczngevkckjjypjciwy`, `sa-east-1`, plan free $0/mes) y migración `0001_create_leads.sql` aplicada. RLS habilitado sin políticas públicas (confirmado con `get_advisors`, único aviso es el esperado `rls_enabled_no_policy`).
+- [x] Rama `main` creada en GitHub (el repo solo tenía la rama de feature) apuntando al código implementado.
+- [x] Proyecto Vercel creado (`academia-referentes-landing`, team `dvv821`) y desplegado.
+- **Desviación del plan**: el MCP de Vercel conectado a esta sesión no tiene una herramienta para importar un repo de GitHub con integración continua ni para configurar variables de entorno — solo `deploy_to_vercel` (subida directa de archivos). El usuario, informado de esta limitación, eligió explícitamente el deploy rápido sin git en vez de hacer la conexión manual por dashboard. Por lo tanto:
+  - El deploy actual **no** está conectado a GitHub — un push futuro a `main` no dispara un deploy automático.
+  - Las variables de entorno (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`) **no están configuradas** — el formulario guarda... en realidad falla en el paso de Supabase con un error genérico honesto (RF-7 funcionando como debe), pero no puede completarse hasta que se configuren.
+- **Pendiente (acción del usuario, fuera del alcance de las herramientas disponibles)**:
+  1. En vercel.com → proyecto `academia-referentes-landing` → Settings → Environment Variables: agregar `SUPABASE_URL=https://lqczngevkckjjypjciwy.supabase.co` y `SUPABASE_SERVICE_ROLE_KEY` (copiado desde Supabase → Project Settings → API → `service_role` secret).
+  2. Opcional pero recomendado para que seguir editando el sitio sea sostenible: conectar el proyecto de Vercel al repo de GitHub (`davicho21/landing`, rama `main`) desde el dashboard, para recuperar el auto-deploy en cada push.
+  3. Revisar Deployment Protection en Vercel si se quiere que el link sea público sin login (por defecto los proyectos de equipo quedan protegidos).
