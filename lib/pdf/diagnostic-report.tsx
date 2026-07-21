@@ -1,18 +1,18 @@
-import path from "node:path";
 import { Document, Page, View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
 import type { RecommendationResult } from "@/lib/recommendation-engine";
 import type { Course } from "@/lib/course-catalog";
 import type { DiagnosticAnswers } from "@/lib/types";
 import { NUM_PERSONAS_OPTIONS, TIEMPO_DISPONIBLE_OPTIONS } from "@/lib/types";
 import { getTrackById } from "@/lib/course-catalog";
+import { LOGO_LOCKUP_DARK_DATA_URI, LOGO_LOCKUP_LIGHT_DATA_URI } from "@/lib/pdf/logo-assets";
 
 // Sin esto, react-pdf parte palabras largas con un guion a mitad (ej.
 // "re-comendada") al ajustar el ancho del texto. Al devolver la palabra
 // completa como único "fragmento", el wrap solo ocurre en espacios.
 Font.registerHyphenationCallback((word) => [word]);
 
-const LOGO_LOCKUP_DARK = path.join(process.cwd(), "public/brand/logo-lockup.png");
-const LOGO_LOCKUP_LIGHT = path.join(process.cwd(), "public/brand/logo-lockup-light.png");
+const LOGO_LOCKUP_DARK = LOGO_LOCKUP_DARK_DATA_URI;
+const LOGO_LOCKUP_LIGHT = LOGO_LOCKUP_LIGHT_DATA_URI;
 const LOGO_ASPECT = 408 / 124;
 
 const COLORS = {
