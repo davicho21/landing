@@ -27,24 +27,24 @@ Basado en: `spec.md` (confirmado el 2026-07-21)
 
 ## Tareas
 
-- [ ] Scaffold del proyecto Next.js (TypeScript, App Router, Tailwind, ESLint) — raíz del repo.
-- [ ] Tema Tailwind con tokens de marca (colores, radios, tipografía Inter) — `tailwind.config.ts`, `app/globals.css`.
-- [ ] Componente `Logo` (ícono SVG + wordmark) — `components/logo.tsx`.
-- [ ] Primitivas de UI: `Button` (pill, variantes outline/filled), `Card`, `ProgressBar`, `Badge` — `components/ui/`.
-- [ ] Catálogo de cursos — `lib/course-catalog.ts`.
-- [ ] Motor de reglas + pruebas unitarias — `lib/recommendation-engine.ts`, `lib/recommendation-engine.test.ts`.
-- [ ] Formulario multi-pantalla (6 pasos + validación + navegación) — `components/diagnostic-form/`, `app/page.tsx`.
-- [ ] Pantalla de confirmación (éxito / éxito-parcial si falla el email) — `components/diagnostic-form/confirmation.tsx`.
-- [ ] Cliente de Supabase server-only — `lib/supabase/server.ts`.
-- [ ] Migración SQL de la tabla `leads` con RLS — `supabase/migrations/0001_create_leads.sql`.
-- [ ] Template del PDF (6 páginas, design system de marca) — `lib/pdf/diagnostic-report.tsx`.
-- [ ] Envío de correo con adjunto — `lib/email/send-report.ts`.
-- [ ] API route de orquestación — `app/api/submit-lead/route.ts`.
-- [ ] Conectar el submit del formulario a la API route (estados: cargando, éxito, éxito-parcial, error) — `components/diagnostic-form/index.tsx`.
-- [ ] `.env.example` documentando las variables requeridas.
-- [ ] Verificación responsive (mobile/desktop) del formulario y la landing.
-- [ ] Pruebas unitarias del motor de reglas y de la validación de payload de la API route.
-- [ ] Verificación manual end-to-end (formulario completo → email real recibido con PDF de 6 páginas) antes de publicar.
+- [x] Scaffold del proyecto Next.js (TypeScript, App Router, Tailwind, ESLint) — raíz del repo.
+- [x] Tema Tailwind con tokens de marca (colores, radios, tipografía Inter) — implementado vía `@theme` de Tailwind v4 en `app/globals.css` (el scaffold de Next 16 usa Tailwind v4 CSS-first, sin `tailwind.config.ts`).
+- [x] Componente `Logo` (ícono SVG + wordmark) — `components/logo.tsx`.
+- [x] Primitivas de UI: `Button` (pill, variantes outline/filled), `Card`, `ProgressBar`, `Badge` — `components/ui/`.
+- [x] Catálogo de cursos — `lib/course-catalog.ts`.
+- [x] Motor de reglas + pruebas unitarias — `lib/recommendation-engine.ts`, `lib/recommendation-engine.test.ts`.
+- [x] Formulario multi-pantalla (6 pasos + validación + navegación) — `components/diagnostic-form/`, `app/page.tsx`.
+- [x] Pantalla de confirmación (éxito / éxito-parcial si falla el email) — `components/diagnostic-form/confirmation.tsx`.
+- [x] Cliente de Supabase server-only — `lib/supabase/server.ts`.
+- [x] Migración SQL de la tabla `leads` con RLS — `supabase/migrations/0001_create_leads.sql`.
+- [x] Template del PDF (6 páginas, design system de marca) — `lib/pdf/diagnostic-report.tsx`.
+- [x] Envío de correo con adjunto — `lib/email/send-report.ts`.
+- [x] API route de orquestación — `app/api/submit-lead/route.tsx` (extensión `.tsx` en vez de `.ts` porque construye JSX del documento PDF).
+- [x] Conectar el submit del formulario a la API route (estados: cargando, éxito, éxito-parcial, error) — `components/diagnostic-form/index.tsx`.
+- [x] `.env.example` documentando las variables requeridas.
+- [x] Verificación responsive (mobile/desktop) del formulario y la landing — probado en navegador con Playwright a 1280px y 390px.
+- [x] Pruebas unitarias del motor de reglas y de la validación de payload de la API route.
+- [ ] Verificación manual end-to-end con credenciales reales (formulario completo → email real recibido con PDF de 6 páginas) — pendiente hasta configurar `SUPABASE_*` y `GMAIL_APP_PASSWORD` reales en la fase de publicación. Verificado en su lugar: build/lint/tests en verde, flujo completo en navegador (validación, navegación, estado de fallo honesto sin credenciales), y generación real del PDF de 6 páginas con el design system correcto (ver capturas de la sesión).
 
 ## Estrategia de pruebas
 
