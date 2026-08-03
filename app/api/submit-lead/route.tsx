@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { EMPTY_ANSWERS, type DiagnosticAnswers } from "@/lib/types";
-import { validateAllAnswers, isValid } from "@/lib/validate-answers";
+import { validateAllAnswers, isValid, hasValidRespuestas } from "@/lib/validate-answers";
 import { getRecommendation } from "@/lib/recommendation-engine";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { DiagnosticReportDocument } from "@/lib/pdf/diagnostic-report";
@@ -10,15 +10,22 @@ export const runtime = "nodejs";
 
 function toAnswers(body: unknown): DiagnosticAnswers {
   const raw = (body ?? {}) as Partial<DiagnosticAnswers>;
+  const respuestasRaw = (raw.respuestas ?? {}) as Record<string, unknown>;
+  const respuestas: Record<string, number> = { ...EMPTY_ANSWERS.respuestas };
+
+  for (const key of Object.keys(respuestas)) {
+    const value = respuestasRaw[key];
+    if (typeof value === "number" && Number.isFinite(value)) {
+      respuestas[key] = Math.min(10, Math.max(1, Math.round(value)));
+    }
+  }
+
   return {
-    ...EMPTY_ANSWERS,
-    ...Object.fromEntries(
-      Object.keys(EMPTY_ANSWERS).map((key) => [
-        key,
-        typeof raw[key as keyof DiagnosticAnswers] === "string" ? raw[key as keyof DiagnosticAnswers] : "",
-      ])
-    ),
-  } as DiagnosticAnswers;
+    empresa: typeof raw.empresa === "string" ? raw.empresa : "",
+    email: typeof raw.email === "string" ? raw.email : "",
+    sector: typeof raw.sector === "string" ? raw.sector : "",
+    respuestas,
+  };
 }
 
 export async function POST(request: Request) {
@@ -31,7 +38,7 @@ export async function POST(request: Request) {
 
   const answers = toAnswers(body);
   const errors = validateAllAnswers(answers);
-  if (!isValid(errors)) {
+  if (!isValid(errors) || !hasValidRespuestas(answers)) {
     return NextResponse.json({ saved: false, errors }, { status: 400 });
   }
 
@@ -41,15 +48,23 @@ export async function POST(request: Request) {
   const { data: lead, error: insertError } = await supabase
     .from("leads")
     .insert({
-      necesidad: answers.necesidad,
-      necesidad_otro: answers.necesidad === "otro" ? answers.necesidadOtro : null,
-      motivo: answers.motivo,
-      num_personas: answers.numPersonas,
-      tiempo_disponible: answers.tiempoDisponible,
-      objetivo: answers.objetivo,
+      empresa: answers.empresa,
       email: answers.email,
-      ruta_recomendada: recommendation.track.id,
-      cursos_recomendados: [recommendation.cursoPrincipal, ...recommendation.cursosComplementarios],
+      sector: answers.sector,
+      respuestas: answers.respuestas,
+      puntajes_aspectos: recommendation.aspectScores.map((score) => ({
+        id: score.aspecto.id,
+        nombre: score.aspecto.nombre,
+        promedio: score.promedio,
+      })),
+      areas_criticas: recommendation.areasCriticas.map((area) => ({
+        id: area.aspecto.id,
+        nombre: area.aspecto.nombre,
+        promedio: area.promedio,
+        ruta: area.track.id,
+        cursoPrincipal: area.cursoPrincipal.id,
+        cursosComplementarios: area.cursosComplementarios.map((c) => c.id),
+      })),
     })
     .select("id")
     .single();
@@ -68,7 +83,7 @@ export async function POST(request: Request) {
       saved: true,
       pdfGenerated: true,
       pdfBase64: pdfBuffer.toString("base64"),
-      fileName: "informe-diagnostico-academia-referente.pdf",
+      fileName: "rueda-crecimiento-organizacional-academia-referente.pdf",
     });
   } catch (error) {
     console.error("No se pudo generar el PDF del lead", lead.id, error);

@@ -1,90 +1,85 @@
 import { describe, expect, it } from "vitest";
-import { getRecommendation } from "./recommendation-engine";
+import { computeAspectScores, getRecommendation } from "./recommendation-engine";
 import { EMPTY_ANSWERS } from "./types";
+import { WHEEL_ASPECTS } from "./wheel-config";
 import type { DiagnosticAnswers } from "./types";
 
-function answers(overrides: Partial<DiagnosticAnswers>): DiagnosticAnswers {
-  return { ...EMPTY_ANSWERS, ...overrides };
+function answersWithScores(scoresByAspect: Record<string, [number, number]>): DiagnosticAnswers {
+  const respuestas: Record<string, number> = { ...EMPTY_ANSWERS.respuestas };
+  for (const aspecto of WHEEL_ASPECTS) {
+    const [p1, p2] = aspecto.preguntas;
+    const [v1, v2] = scoresByAspect[aspecto.id] ?? [5, 5];
+    respuestas[p1.id] = v1;
+    respuestas[p2.id] = v2;
+  }
+  return { empresa: "Empresa Test", email: "lead@empresa.com", sector: "Tecnología", respuestas };
 }
 
+describe("computeAspectScores", () => {
+  it("promedia las dos preguntas de cada aspecto", () => {
+    const answers = answersWithScores({ estrategia: [6, 8] });
+    const scores = computeAspectScores(answers);
+    const estrategia = scores.find((s) => s.aspecto.id === "estrategia");
+    expect(estrategia?.promedio).toBe(7);
+  });
+
+  it("devuelve un puntaje por cada una de las 8 áreas", () => {
+    const answers = answersWithScores({});
+    const scores = computeAspectScores(answers);
+    expect(scores).toHaveLength(8);
+  });
+});
+
 describe("getRecommendation", () => {
-  it("recomienda la ruta de liderazgo cuando se selecciona directamente", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "liderazgo",
-        numPersonas: "6-15",
-        tiempoDisponible: "mas-16h",
-      })
-    );
+  it("identifica las 2 áreas con menor puntaje como áreas críticas", () => {
+    const answers = answersWithScores({
+      estrategia: [2, 2],
+      liderazgo: [3, 3],
+      cultura: [9, 9],
+      aprendizaje: [9, 9],
+      bienestar: [9, 9],
+      comunicacion: [9, 9],
+      tecnologia: [9, 9],
+      analitica: [9, 9],
+    });
 
-    expect(result.track.id).toBe("liderazgo");
+    const result = getRecommendation(answers);
+    const idsCriticos = result.areasCriticas.map((a) => a.aspecto.id);
+
+    expect(idsCriticos).toEqual(["estrategia", "liderazgo"]);
   });
 
-  it("prioriza los cursos más cortos cuando el tiempo disponible es limitado", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "liderazgo",
-        numPersonas: "6-15",
-        tiempoDisponible: "menos-4h",
-      })
-    );
+  it("resuelve la ruta y el curso principal de cada área crítica", () => {
+    const answers = answersWithScores({ liderazgo: [1, 1] });
+    const result = getRecommendation(answers);
+    const liderazgo = result.areasCriticas.find((a) => a.aspecto.id === "liderazgo");
 
-    const allDurations = [
-      result.cursoPrincipal.duracionHoras,
-      ...result.cursosComplementarios.map((c) => c.duracionHoras),
-    ];
-
-    expect(result.cursoPrincipal.duracionHoras).toBeLessThanOrEqual(4);
-    expect([...allDurations].sort((a, b) => a - b)).toEqual(allDurations);
+    expect(liderazgo?.track.id).toBe("liderazgo");
+    expect(liderazgo?.cursoPrincipal).toBeDefined();
   });
 
-  it("no prioriza por duración cuando hay tiempo de sobra", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "ventas",
-        numPersonas: "6-15",
-        tiempoDisponible: "mas-16h",
-      })
-    );
-
-    expect(result.cursoPrincipal.id).toBe("venta-consultiva");
+  it("marca la figura como irregular cuando hay picos y valles marcados", () => {
+    const answers = answersWithScores({
+      estrategia: [1, 1],
+      liderazgo: [10, 10],
+    });
+    const result = getRecommendation(answers);
+    expect(result.forma.tipo).toBe("irregular");
   });
 
-  it("infiere la ruta por palabras clave cuando la necesidad es texto libre", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "otro",
-        necesidadOtro: "Queremos mejorar cómo negociamos con clientes grandes",
-        numPersonas: "1-5",
-        tiempoDisponible: "8-16h",
-      })
+  it("marca la figura como armónica y de madurez alta cuando todos los puntajes son altos y parejos", () => {
+    const answers = answersWithScores(
+      Object.fromEntries(WHEEL_ASPECTS.map((a) => [a.id, [8, 8] as [number, number]]))
     );
-
-    expect(result.track.id).toBe("ventas");
+    const result = getRecommendation(answers);
+    expect(result.forma.tipo).toBe("armonica-alta");
   });
 
-  it("cae a una ruta transversal por defecto cuando no hay señal clara", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "otro",
-        necesidadOtro: "No estoy muy seguro todavía",
-        numPersonas: "1-5",
-        tiempoDisponible: "8-16h",
-      })
+  it("marca la figura como armónica pero de estancamiento cuando todos los puntajes son bajos y parejos", () => {
+    const answers = answersWithScores(
+      Object.fromEntries(WHEEL_ASPECTS.map((a) => [a.id, [3, 3] as [number, number]]))
     );
-
-    expect(result.track.id).toBe("comunicacion");
-  });
-
-  it("agrega una nota de modalidad para grupos grandes", () => {
-    const result = getRecommendation(
-      answers({
-        necesidad: "productividad-digital",
-        numPersonas: "50+",
-        tiempoDisponible: "mas-16h",
-      })
-    );
-
-    expect(result.notaModalidad).toMatch(/cohortes/i);
+    const result = getRecommendation(answers);
+    expect(result.forma.tipo).toBe("armonica-baja");
   });
 });

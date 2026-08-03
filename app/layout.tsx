@@ -8,9 +8,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Diagnóstico de formación | Academia Referente",
+  title: "Rueda de Crecimiento Organizacional | Academia Referente",
   description:
-    "Responde 6 preguntas y recibe un informe con recomendaciones de formación para tu equipo, elaborado por Academia Referente.",
+    "Evalúa 8 áreas críticas de tu organización y recibe un informe con tu rueda de crecimiento y una ruta de formación sugerida, elaborado por Academia Referente.",
 };
 
 export default function RootLayout({

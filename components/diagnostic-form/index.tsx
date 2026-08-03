@@ -6,27 +6,13 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { Card } from "@/components/ui/card";
 import { EMPTY_ANSWERS, type DiagnosticAnswers } from "@/lib/types";
 import { validateStep, isValid, type FieldErrors } from "@/lib/validate-answers";
-import {
-  StepNecesidad,
-  StepMotivo,
-  StepNumPersonas,
-  StepTiempo,
-  StepObjetivo,
-  StepEmail,
-} from "./steps";
+import { WHEEL_ASPECTS } from "@/lib/wheel-config";
+import { StepEmpresa, StepEmail, StepSector, AspectStep } from "./steps";
 import { Confirmation } from "./confirmation";
 
-const TOTAL_STEPS = 6;
+const GENERAL_STEPS = 3;
+const TOTAL_STEPS = GENERAL_STEPS + WHEEL_ASPECTS.length;
 const DEFAULT_FILE_NAME = "informe-diagnostico-academia-referente.pdf";
-
-const STEP_COMPONENTS = [
-  StepNecesidad,
-  StepMotivo,
-  StepNumPersonas,
-  StepTiempo,
-  StepObjetivo,
-  StepEmail,
-];
 
 type SubmitStatus = "idle" | "submitting" | "done" | "error";
 
@@ -51,6 +37,13 @@ export function DiagnosticForm() {
   function handleChange<K extends keyof DiagnosticAnswers>(field: K, value: DiagnosticAnswers[K]) {
     setAnswers((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
+  }
+
+  function handleChangeRespuesta(questionId: string, value: number) {
+    setAnswers((prev) => ({
+      ...prev,
+      respuestas: { ...prev.respuestas, [questionId]: value },
+    }));
   }
 
   async function submit() {
@@ -82,10 +75,12 @@ export function DiagnosticForm() {
   }
 
   function handleNext() {
-    const stepErrors = validateStep(step, answers);
-    if (!isValid(stepErrors)) {
-      setErrors(stepErrors);
-      return;
+    if (step <= GENERAL_STEPS) {
+      const stepErrors = validateStep(step, answers);
+      if (!isValid(stepErrors)) {
+        setErrors(stepErrors);
+        return;
+      }
     }
 
     if (step < TOTAL_STEPS) {
@@ -108,13 +103,24 @@ export function DiagnosticForm() {
     );
   }
 
-  const StepComponent = STEP_COMPONENTS[step - 1];
+  const isAspectStep = step > GENERAL_STEPS;
+  const aspecto = isAspectStep ? WHEEL_ASPECTS[step - GENERAL_STEPS - 1] : undefined;
 
   return (
     <Card className="w-full max-w-xl p-8">
       <div className="flex flex-col gap-8">
         <ProgressBar step={step} total={TOTAL_STEPS} />
-        <StepComponent answers={answers} errors={errors} onChange={handleChange} />
+
+        {step === 1 && <StepEmpresa answers={answers} errors={errors} onChange={handleChange} />}
+        {step === 2 && <StepEmail answers={answers} errors={errors} onChange={handleChange} />}
+        {step === 3 && <StepSector answers={answers} errors={errors} onChange={handleChange} />}
+        {isAspectStep && aspecto && (
+          <AspectStep
+            aspecto={aspecto}
+            respuestas={answers.respuestas}
+            onChangeRespuesta={handleChangeRespuesta}
+          />
+        )}
 
         {status === "error" && (
           <p className="text-sm text-red-400">

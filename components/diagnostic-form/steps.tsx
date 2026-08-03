@@ -1,5 +1,5 @@
-import { TRAINING_TRACKS } from "@/lib/course-catalog";
-import { NUM_PERSONAS_OPTIONS, TIEMPO_DISPONIBLE_OPTIONS, type DiagnosticAnswers } from "@/lib/types";
+import type { DiagnosticAnswers } from "@/lib/types";
+import type { WheelAspect } from "@/lib/wheel-config";
 import type { FieldErrors } from "@/lib/validate-answers";
 
 type StepProps = {
@@ -8,139 +8,21 @@ type StepProps = {
   onChange: <K extends keyof DiagnosticAnswers>(field: K, value: DiagnosticAnswers[K]) => void;
 };
 
-const fieldLabel = "text-sm font-medium text-brand-muted";
 const errorText = "text-sm text-red-400";
 const inputClass =
   "w-full rounded-xl border border-brand-border bg-brand-panel-2 px-4 py-3 text-brand-text placeholder:text-brand-muted/60 outline-none focus:border-brand-accent";
 
-function OptionCard({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full rounded-xl border px-4 py-3 text-left text-sm transition-colors ${
-        selected
-          ? "border-brand-accent bg-brand-accent/10 text-brand-text"
-          : "border-brand-border bg-brand-panel-2 text-brand-muted hover:border-white/20"
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-export function StepNecesidad({ answers, errors, onChange }: StepProps) {
+export function StepEmpresa({ answers, errors, onChange }: StepProps) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Cuál es la necesidad de formación actual?</h2>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {TRAINING_TRACKS.map((track) => (
-          <OptionCard
-            key={track.id}
-            selected={answers.necesidad === track.id}
-            onClick={() => onChange("necesidad", track.id)}
-          >
-            {track.nombre}
-          </OptionCard>
-        ))}
-        <OptionCard selected={answers.necesidad === "otro"} onClick={() => onChange("necesidad", "otro")}>
-          Otra necesidad
-        </OptionCard>
-      </div>
-      {errors.necesidad && <p className={errorText}>{errors.necesidad}</p>}
-      {answers.necesidad === "otro" && (
-        <div className="flex flex-col gap-1">
-          <label className={fieldLabel} htmlFor="necesidadOtro">
-            Cuéntanos brevemente
-          </label>
-          <input
-            id="necesidadOtro"
-            className={inputClass}
-            value={answers.necesidadOtro}
-            onChange={(e) => onChange("necesidadOtro", e.target.value)}
-            placeholder="Ej. queremos mejorar cómo negociamos con clientes grandes"
-          />
-          {errors.necesidadOtro && <p className={errorText}>{errors.necesidadOtro}</p>}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function StepMotivo({ answers, errors, onChange }: StepProps) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Por qué considera necesaria esta formación ahora?</h2>
-      <textarea
-        className={`${inputClass} min-h-32`}
-        value={answers.motivo}
-        onChange={(e) => onChange("motivo", e.target.value)}
-        placeholder="Ej. notamos brechas de habilidades que están afectando los resultados del equipo"
+      <h2 className="text-2xl font-semibold">¿Cuál es el nombre de tu empresa?</h2>
+      <input
+        className={inputClass}
+        value={answers.empresa}
+        onChange={(e) => onChange("empresa", e.target.value)}
+        placeholder="Ej. Academia Referente S.A.S."
       />
-      {errors.motivo && <p className={errorText}>{errors.motivo}</p>}
-    </div>
-  );
-}
-
-export function StepNumPersonas({ answers, errors, onChange }: StepProps) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Cuántas personas participarán?</h2>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {NUM_PERSONAS_OPTIONS.map((option) => (
-          <OptionCard
-            key={option.value}
-            selected={answers.numPersonas === option.value}
-            onClick={() => onChange("numPersonas", option.value)}
-          >
-            {option.label}
-          </OptionCard>
-        ))}
-      </div>
-      {errors.numPersonas && <p className={errorText}>{errors.numPersonas}</p>}
-    </div>
-  );
-}
-
-export function StepTiempo({ answers, errors, onChange }: StepProps) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Cuánto tiempo tienen disponible para la capacitación?</h2>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {TIEMPO_DISPONIBLE_OPTIONS.map((option) => (
-          <OptionCard
-            key={option.value}
-            selected={answers.tiempoDisponible === option.value}
-            onClick={() => onChange("tiempoDisponible", option.value)}
-          >
-            {option.label}
-          </OptionCard>
-        ))}
-      </div>
-      {errors.tiempoDisponible && <p className={errorText}>{errors.tiempoDisponible}</p>}
-    </div>
-  );
-}
-
-export function StepObjetivo({ answers, errors, onChange }: StepProps) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Qué espera lograr con esta formación?</h2>
-      <textarea
-        className={`${inputClass} min-h-32`}
-        value={answers.objetivo}
-        onChange={(e) => onChange("objetivo", e.target.value)}
-        placeholder="Ej. reducir la rotación del equipo y mejorar los resultados comerciales"
-      />
-      {errors.objetivo && <p className={errorText}>{errors.objetivo}</p>}
+      {errors.empresa && <p className={errorText}>{errors.empresa}</p>}
     </div>
   );
 }
@@ -148,19 +30,100 @@ export function StepObjetivo({ answers, errors, onChange }: StepProps) {
 export function StepEmail({ answers, errors, onChange }: StepProps) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-semibold">¿Cuál es tu correo electrónico?</h2>
+      <h2 className="text-2xl font-semibold">¿Cuál es tu correo corporativo?</h2>
       <p className="text-sm text-brand-muted">
-        Lo usamos para identificarte como lead y darte seguimiento. Tu informe con recomendaciones y una ruta
-        de formación sugerida quedará listo para descargar al final.
+        Usamos tu correo corporativo para identificarte como lead y darte seguimiento. No aceptamos
+        direcciones de Gmail, Hotmail, Outlook u otros proveedores gratuitos.
       </p>
       <input
         type="email"
         className={inputClass}
         value={answers.email}
         onChange={(e) => onChange("email", e.target.value)}
-        placeholder="nombre@empresa.com"
+        placeholder="nombre@tuempresa.com"
       />
       {errors.email && <p className={errorText}>{errors.email}</p>}
+    </div>
+  );
+}
+
+export function StepSector({ answers, errors, onChange }: StepProps) {
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-2xl font-semibold">¿A qué sector pertenece la empresa?</h2>
+      <input
+        className={inputClass}
+        value={answers.sector}
+        onChange={(e) => onChange("sector", e.target.value)}
+        placeholder="Ej. Tecnología, Retail, Salud, Manufactura..."
+      />
+      {errors.sector && <p className={errorText}>{errors.sector}</p>}
+    </div>
+  );
+}
+
+function tierFor(value: number): { label: string; className: string } {
+  if (value <= 4) return { label: "Urgente", className: "text-red-400" };
+  if (value <= 7) return { label: "En proceso", className: "text-amber-400" };
+  return { label: "Excelente", className: "text-brand-accent" };
+}
+
+function ScoreSlider({
+  questionText,
+  value,
+  onChange,
+}: {
+  questionText: string;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  const tier = tierFor(value);
+
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border border-brand-border bg-brand-panel-2 p-4">
+      <p className="text-sm text-brand-text">{questionText}</p>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        step={1}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="w-full accent-[#6fffb0]"
+      />
+      <div className="flex items-center justify-between text-xs">
+        <span className={`font-semibold ${tier.className}`}>{tier.label}</span>
+        <span className="font-semibold text-brand-text">{value} / 10</span>
+      </div>
+    </div>
+  );
+}
+
+export function AspectStep({
+  aspecto,
+  respuestas,
+  onChangeRespuesta,
+}: {
+  aspecto: WheelAspect;
+  respuestas: Record<string, number>;
+  onChangeRespuesta: (questionId: string, value: number) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-2xl font-semibold">{aspecto.nombre}</h2>
+        <p className="mt-1 text-sm text-brand-muted">{aspecto.descripcion}</p>
+      </div>
+      <div className="flex flex-col gap-3">
+        {aspecto.preguntas.map((pregunta) => (
+          <ScoreSlider
+            key={pregunta.id}
+            questionText={pregunta.texto}
+            value={respuestas[pregunta.id] ?? 5}
+            onChange={(value) => onChangeRespuesta(pregunta.id, value)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

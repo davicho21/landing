@@ -16,8 +16,40 @@ export type TrainingTrack = {
 
 export const TRAINING_TRACKS: TrainingTrack[] = [
   {
+    id: "estrategia-proposito",
+    nombre: "Estrategia y Propósito",
+    descripcion:
+      "Para clarificar el rumbo organizacional y traducirlo en metas que el equipo entienda y sienta propias.",
+    cursos: [
+      {
+        id: "diseno-estrategia",
+        nombre: "Diseño y comunicación de la estrategia organizacional",
+        duracionHoras: 8,
+        modalidad: "Taller práctico",
+        beneficiario: "Liderazgo y gerencia",
+        temario: [
+          "Traducir la visión y misión en un propósito claro y memorable",
+          "Diseñar metas estratégicas SMART alineadas a los valores de la empresa",
+          "Comunicar la estrategia de forma que el equipo la sienta propia",
+        ],
+      },
+      {
+        id: "estrategia-a-ejecucion",
+        nombre: "Del plan estratégico a la ejecución en equipo",
+        duracionHoras: 6,
+        modalidad: "Taller práctico",
+        beneficiario: "Mandos medios y líderes de área",
+        temario: [
+          "Bajar la estrategia corporativa a objetivos de equipo",
+          "Dar seguimiento a metas sin caer en microgestión",
+          "Detectar y corregir desalineaciones entre discurso y práctica",
+        ],
+      },
+    ],
+  },
+  {
     id: "liderazgo",
-    nombre: "Liderazgo y Gestión de Equipos",
+    nombre: "Liderazgo Transformacional y Empatía",
     descripcion:
       "Para desarrollar líderes capaces de guiar equipos, dar feedback efectivo y sostener el desempeño en el tiempo.",
     cursos: [
@@ -60,54 +92,118 @@ export const TRAINING_TRACKS: TrainingTrack[] = [
     ],
   },
   {
-    id: "ventas",
-    nombre: "Ventas y Atención al Cliente",
+    id: "cultura-talento",
+    nombre: "Cultura, Justicia y Equidad",
     descripcion:
-      "Para equipos comerciales y de servicio que necesitan mejorar conversión, retención y satisfacción del cliente.",
+      "Para fortalecer la cultura organizacional, la inclusión y el sentido de pertenencia dentro de la empresa.",
     cursos: [
       {
-        id: "venta-consultiva",
-        nombre: "Venta consultiva B2B",
-        duracionHoras: 10,
-        modalidad: "Curso con práctica guiada",
-        beneficiario: "Equipos de ventas",
+        id: "cultura-organizacional",
+        nombre: "Cultura organizacional y employer branding",
+        duracionHoras: 6,
+        modalidad: "Taller práctico",
+        beneficiario: "RRHH y liderazgo",
         temario: [
-          "Diagnosticar necesidades reales del cliente antes de ofrecer una solución",
-          "Manejar objeciones sin recurrir a descuentos",
-          "Cerrar acuerdos basados en valor, no en precio",
+          "Definir y comunicar los valores de la empresa de forma consistente",
+          "Alinear las prácticas de gestión de personas con la cultura deseada",
+          "Convertir a los colaboradores en embajadores de marca",
         ],
       },
       {
-        id: "experiencia-cliente",
-        nombre: "Experiencia y servicio al cliente de alto impacto",
-        duracionHoras: 6,
-        modalidad: "Taller práctico",
-        beneficiario: "Equipos de atención al cliente",
+        id: "dei-trabajo",
+        nombre: "Diversidad, equidad e inclusión en el trabajo",
+        duracionHoras: 4,
+        modalidad: "Taller corto",
+        beneficiario: "Todo el equipo",
         temario: [
-          "Resolver reclamos convirtiendo una mala experiencia en fidelización",
-          "Personalizar la atención según el perfil del cliente",
-          "Medir y mejorar la satisfacción de forma continua",
+          "Reconocer sesgos inconscientes en procesos de selección y evaluación",
+          "Crear un ambiente de trabajo psicológicamente seguro",
+          "Construir prácticas inclusivas sostenibles en el tiempo",
         ],
       },
       {
-        id: "negociacion-efectiva",
-        nombre: "Negociación efectiva",
+        id: "onboarding-efectivo",
+        nombre: "Onboarding efectivo para nuevas contrataciones",
         duracionHoras: 6,
         modalidad: "Taller práctico",
-        beneficiario: "Equipos comerciales y de compras",
+        beneficiario: "RRHH y líderes de equipo",
         temario: [
-          "Identificar los intereses reales detrás de cada posición",
-          "Construir acuerdos de beneficio mutuo",
-          "Manejar tácticas de presión sin ceder terreno innecesariamente",
+          "Diseñar un plan de los primeros 90 días con hitos claros",
+          "Acelerar el tiempo hasta la primera contribución real",
+          "Reducir la rotación temprana con seguimiento estructurado",
+        ],
+      },
+    ],
+  },
+  {
+    id: "aprendizaje-continuo",
+    nombre: "Aprendizaje Continuo (Upskilling y Reskilling)",
+    descripcion:
+      "Para cerrar brechas de habilidades críticas y construir una fuerza laboral que se adapta sola a lo que viene.",
+    cursos: [
+      {
+        id: "rutas-upskilling",
+        nombre: "Diseño de rutas de upskilling y reskilling",
+        duracionHoras: 8,
+        modalidad: "Curso práctico",
+        beneficiario: "RRHH y líderes de talento",
+        temario: [
+          "Identificar brechas de habilidades críticas a 2-3 años",
+          "Diseñar rutas de aprendizaje personalizadas por rol",
+          "Medir la efectividad de los programas de capacitación",
+        ],
+      },
+      {
+        id: "aprendizaje-autodirigido",
+        nombre: "Cultura de aprendizaje autodirigido",
+        duracionHoras: 6,
+        modalidad: "Taller práctico",
+        beneficiario: "Todo el equipo",
+        temario: [
+          "Fomentar la autonomía y la curiosidad como hábito de trabajo",
+          "Integrar el aprendizaje en el flujo diario de trabajo",
+          "Reconocer y dar visibilidad al aprendizaje autogestionado",
+        ],
+      },
+    ],
+  },
+  {
+    id: "bienestar",
+    nombre: "Bienestar y Salud Mental",
+    descripcion:
+      "Para sostener el rendimiento del equipo sin comprometer su salud, previniendo el agotamiento y el tecnoestrés.",
+    cursos: [
+      {
+        id: "prevencion-burnout",
+        nombre: "Prevención del burnout y gestión del estrés laboral",
+        duracionHoras: 6,
+        modalidad: "Taller práctico",
+        beneficiario: "Todo el equipo",
+        temario: [
+          "Reconocer señales tempranas de agotamiento en el equipo",
+          "Diseñar cargas de trabajo y tiempos de recuperación sostenibles",
+          "Gestionar el tecnoestrés derivado del uso constante de herramientas digitales",
+        ],
+      },
+      {
+        id: "liderazgo-bienestar",
+        nombre: "Liderazgo del bienestar y desconexión digital",
+        duracionHoras: 4,
+        modalidad: "Taller corto",
+        beneficiario: "Líderes de equipo",
+        temario: [
+          "Modelar hábitos de desconexión digital desde el liderazgo",
+          "Establecer políticas realistas de equilibrio vida-trabajo",
+          "Sostener el rendimiento del equipo sin sacrificar su salud",
         ],
       },
     ],
   },
   {
     id: "comunicacion",
-    nombre: "Comunicación y Habilidades Blandas",
+    nombre: "Comunicación y Resolución de Conflictos",
     descripcion:
-      "Para fortalecer la colaboración interna y la forma en la que los equipos se comunican dentro y fuera de la empresa.",
+      "Para fortalecer la fluidez de la información y la capacidad de gestionar desacuerdos de forma constructiva.",
     cursos: [
       {
         id: "comunicacion-asertiva",
@@ -122,15 +218,15 @@ export const TRAINING_TRACKS: TrainingTrack[] = [
         ],
       },
       {
-        id: "presentaciones-alto-impacto",
-        nombre: "Presentaciones de alto impacto",
+        id: "resolucion-conflictos",
+        nombre: "Negociación y resolución de conflictos",
         duracionHoras: 6,
         modalidad: "Taller práctico",
-        beneficiario: "Roles con exposición a clientes o directivos",
+        beneficiario: "Líderes y equipos comerciales",
         temario: [
-          "Estructurar un mensaje claro y memorable para cualquier audiencia",
-          "Usar storytelling y datos para respaldar una propuesta",
-          "Manejar los nervios y preguntas difíciles con seguridad",
+          "Identificar los intereses reales detrás de cada posición",
+          "Construir acuerdos de beneficio mutuo",
+          "Manejar tácticas de presión sin ceder terreno innecesariamente",
         ],
       },
       {
@@ -149,9 +245,9 @@ export const TRAINING_TRACKS: TrainingTrack[] = [
   },
   {
     id: "productividad-digital",
-    nombre: "Productividad y Transformación Digital",
+    nombre: "Tecnología e Inteligencia Artificial con Intencionalidad",
     descripcion:
-      "Para equipos que necesitan trabajar de forma más eficiente aprovechando herramientas digitales y de IA.",
+      "Para integrar la tecnología y la IA de forma intencional, mejorando la productividad sin generar miedo ni riesgo operativo.",
     cursos: [
       {
         id: "google-workspace",
@@ -178,68 +274,24 @@ export const TRAINING_TRACKS: TrainingTrack[] = [
         ],
       },
       {
-        id: "gestion-del-tiempo",
-        nombre: "Gestión del tiempo y prioridades",
+        id: "ia-etica-riesgos",
+        nombre: "Uso ético y crítico de la IA en el trabajo",
         duracionHoras: 4,
         modalidad: "Taller corto",
         beneficiario: "Todo el equipo",
         temario: [
-          "Priorizar tareas según impacto real, no solo urgencia",
-          "Reducir el multitasking y las interrupciones constantes",
-          "Planificar la semana con bloques de tiempo protegido",
-        ],
-      },
-    ],
-  },
-  {
-    id: "cultura-talento",
-    nombre: "Cultura, Onboarding y Talento",
-    descripcion:
-      "Para fortalecer la cultura organizacional y asegurar que las nuevas incorporaciones se integren rápido y bien.",
-    cursos: [
-      {
-        id: "onboarding-efectivo",
-        nombre: "Onboarding efectivo para nuevas contrataciones",
-        duracionHoras: 6,
-        modalidad: "Taller práctico",
-        beneficiario: "RRHH y líderes de equipo",
-        temario: [
-          "Diseñar un plan de los primeros 90 días con hitos claros",
-          "Acelerar el tiempo hasta la primera contribución real",
-          "Reducir la rotación temprana con seguimiento estructurado",
-        ],
-      },
-      {
-        id: "cultura-organizacional",
-        nombre: "Cultura organizacional y employer branding",
-        duracionHoras: 6,
-        modalidad: "Taller práctico",
-        beneficiario: "RRHH y liderazgo",
-        temario: [
-          "Definir y comunicar los valores de la empresa de forma consistente",
-          "Alinear las prácticas de gestión de personas con la cultura deseada",
-          "Convertir a los colaboradores en embajadores de marca",
-        ],
-      },
-      {
-        id: "dei-trabajo",
-        nombre: "Diversidad, equidad e inclusión en el trabajo",
-        duracionHoras: 4,
-        modalidad: "Taller corto",
-        beneficiario: "Todo el equipo",
-        temario: [
-          "Reconocer sesgos inconscientes en procesos de selección y evaluación",
-          "Crear un ambiente de trabajo psicológicamente seguro",
-          "Construir prácticas inclusivas sostenibles en el tiempo",
+          "Reconocer los riesgos operativos y éticos del uso irreflexivo de la IA",
+          "Reducir el miedo y la resistencia al cambio tecnológico en el equipo",
+          "Establecer buenas prácticas de verificación y uso responsable",
         ],
       },
     ],
   },
   {
     id: "datos-decisiones",
-    nombre: "Data y Analítica para Decisiones",
+    nombre: "Evaluación de Impacto y Analítica de Datos",
     descripcion:
-      "Para que los equipos aprendan a leer datos y usarlos para tomar mejores decisiones, incluida la medición del ROI de la propia capacitación.",
+      "Para que las decisiones de talento y negocio se basen en evidencia, ROI y analítica predictiva, no en intuición.",
     cursos: [
       {
         id: "analitica-no-analistas",
@@ -263,6 +315,18 @@ export const TRAINING_TRACKS: TrainingTrack[] = [
           "Definir KPIs de gestión de talento alineados al negocio",
           "Calcular el retorno de inversión de programas de formación",
           "Comunicar resultados de RRHH en el lenguaje del negocio",
+        ],
+      },
+      {
+        id: "analitica-predictiva",
+        nombre: "Introducción a la analítica predictiva para decisiones de talento",
+        duracionHoras: 8,
+        modalidad: "Curso práctico",
+        beneficiario: "RRHH y liderazgo",
+        temario: [
+          "Anticipar riesgos de rotación y desempeño con datos históricos",
+          "Simular el impacto de nuevas políticas antes de implementarlas",
+          "Presentar hallazgos predictivos de forma accionable para la gerencia",
         ],
       },
     ],

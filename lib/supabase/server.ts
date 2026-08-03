@@ -15,13 +15,10 @@ export function getSupabaseServerClient() {
 }
 
 export type LeadRow = {
-  necesidad: string;
-  necesidad_otro: string | null;
-  motivo: string;
-  num_personas: string;
-  tiempo_disponible: string;
-  objetivo: string;
+  empresa: string;
   email: string;
-  ruta_recomendada: string;
-  cursos_recomendados: unknown;
+  sector: string;
+  respuestas: Record<string, number>;
+  puntajes_aspectos: unknown;
+  areas_criticas: unknown;
 };
