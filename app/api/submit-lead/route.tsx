@@ -8,6 +8,10 @@ import { DiagnosticReportDocument } from "@/lib/pdf/diagnostic-report";
 
 export const runtime = "nodejs";
 
+function str(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
 function toAnswers(body: unknown): DiagnosticAnswers {
   const raw = (body ?? {}) as Partial<DiagnosticAnswers>;
   const respuestasRaw = (raw.respuestas ?? {}) as Record<string, unknown>;
@@ -21,9 +25,18 @@ function toAnswers(body: unknown): DiagnosticAnswers {
   }
 
   return {
-    empresa: typeof raw.empresa === "string" ? raw.empresa : "",
-    email: typeof raw.email === "string" ? raw.email : "",
-    sector: typeof raw.sector === "string" ? raw.sector : "",
+    nombres: str(raw.nombres),
+    apellidos: str(raw.apellidos),
+    email: str(raw.email),
+    cargo: str(raw.cargo),
+    areaDesempeno: str(raw.areaDesempeno),
+    empresa: str(raw.empresa),
+    sitioWeb: str(raw.sitioWeb),
+    pais: str(raw.pais),
+    ciudad: str(raw.ciudad),
+    industria: str(raw.industria),
+    numColaboradores: str(raw.numColaboradores),
+    desafioPrincipal: str(raw.desafioPrincipal),
     respuestas,
   };
 }
@@ -48,11 +61,20 @@ export async function POST(request: Request) {
   const { data: lead, error: insertError } = await supabase
     .from("leads")
     .insert({
-      empresa: answers.empresa,
+      nombres: answers.nombres,
+      apellidos: answers.apellidos,
       email: answers.email,
-      sector: answers.sector,
+      cargo: answers.cargo,
+      area_desempeno: answers.areaDesempeno,
+      empresa: answers.empresa,
+      sitio_web: answers.sitioWeb,
+      pais: answers.pais,
+      ciudad: answers.ciudad,
+      industria: answers.industria,
+      num_colaboradores: answers.numColaboradores,
+      desafio_principal: answers.desafioPrincipal,
       respuestas: answers.respuestas,
-      puntajes_aspectos: recommendation.aspectScores.map((score) => ({
+      puntajes_areas: recommendation.aspectScores.map((score) => ({
         id: score.aspecto.id,
         nombre: score.aspecto.nombre,
         promedio: score.promedio,
@@ -83,7 +105,7 @@ export async function POST(request: Request) {
       saved: true,
       pdfGenerated: true,
       pdfBase64: pdfBuffer.toString("base64"),
-      fileName: "rueda-crecimiento-organizacional-academia-referente.pdf",
+      fileName: "indice-madurez-formacion-corporativa-academia-referente.pdf",
     });
   } catch (error) {
     console.error("No se pudo generar el PDF del lead", lead.id, error);

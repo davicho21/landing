@@ -1,4 +1,4 @@
-import { WHEEL_ASPECTS } from "./wheel-config";
+import { PENTAGON_AREAS } from "./pentagon-config";
 
 export const FREE_EMAIL_DOMAINS = [
   "gmail.com",
@@ -16,16 +16,25 @@ export const FREE_EMAIL_DOMAINS = [
 export const DEFAULT_SCORE = 5;
 
 export type DiagnosticAnswers = {
-  empresa: string;
+  nombres: string;
+  apellidos: string;
   email: string;
-  sector: string;
+  cargo: string;
+  areaDesempeno: string;
+  empresa: string;
+  sitioWeb: string;
+  pais: string;
+  ciudad: string;
+  industria: string;
+  numColaboradores: string;
+  desafioPrincipal: string;
   respuestas: Record<string, number>;
 };
 
 function buildEmptyRespuestas(): Record<string, number> {
   const respuestas: Record<string, number> = {};
-  for (const aspecto of WHEEL_ASPECTS) {
-    for (const pregunta of aspecto.preguntas) {
+  for (const area of PENTAGON_AREAS) {
+    for (const pregunta of area.preguntas) {
       respuestas[pregunta.id] = DEFAULT_SCORE;
     }
   }
@@ -33,8 +42,17 @@ function buildEmptyRespuestas(): Record<string, number> {
 }
 
 export const EMPTY_ANSWERS: DiagnosticAnswers = {
-  empresa: "",
+  nombres: "",
+  apellidos: "",
   email: "",
-  sector: "",
+  cargo: "",
+  areaDesempeno: "",
+  empresa: "",
+  sitioWeb: "",
+  pais: "",
+  ciudad: "",
+  industria: "",
+  numColaboradores: "",
+  desafioPrincipal: "",
   respuestas: buildEmptyRespuestas(),
 };

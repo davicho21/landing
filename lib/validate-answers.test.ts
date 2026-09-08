@@ -4,21 +4,55 @@ import { EMPTY_ANSWERS } from "./types";
 import type { DiagnosticAnswers } from "./types";
 
 const COMPLETE: DiagnosticAnswers = {
-  empresa: "Empresa Test S.A.S.",
+  nombres: "María",
+  apellidos: "González",
   email: "lead@empresa.com",
-  sector: "Tecnología",
+  cargo: "Directora de RRHH",
+  areaDesempeno: "Recursos Humanos / Gestión del Talento / L&D",
+  empresa: "Empresa Test S.A.S.",
+  sitioWeb: "",
+  pais: "Colombia",
+  ciudad: "Bogotá",
+  industria: "Tecnología y Software",
+  numColaboradores: "150 - 500 (Mediana consolidada)",
+  desafioPrincipal: "",
   respuestas: { ...EMPTY_ANSWERS.respuestas },
 };
 
 describe("validateAllAnswers", () => {
-  it("no reporta errores cuando empresa, email corporativo y sector son válidos", () => {
+  it("no reporta errores cuando el contacto y la organización son válidos", () => {
     expect(isValid(validateAllAnswers(COMPLETE))).toBe(true);
   });
 
-  it("reporta empresa, email y sector vacíos como inválidos", () => {
-    const errors = validateAllAnswers({ ...COMPLETE, empresa: "", email: "", sector: "" });
+  it("reporta los campos obligatorios vacíos como inválidos", () => {
+    const errors = validateAllAnswers({
+      ...COMPLETE,
+      nombres: "",
+      apellidos: "",
+      email: "",
+      cargo: "",
+      areaDesempeno: "",
+      empresa: "",
+      pais: "",
+      ciudad: "",
+      industria: "",
+      numColaboradores: "",
+    });
     expect(isValid(errors)).toBe(false);
-    expect(Object.keys(errors).sort()).toEqual(["email", "empresa", "sector"]);
+    expect(Object.keys(errors).sort()).toEqual(
+      [
+        "apellidos",
+        "areaDesempeno",
+        "cargo",
+        "ciudad",
+        "email",
+        "empresa",
+        "industria",
+        "nombres",
+        "numColaboradores",
+        "pais",
+      ].sort()
+    );
   });
 
   it("rechaza un email con formato inválido", () => {
@@ -31,6 +65,11 @@ describe("validateAllAnswers", () => {
       const errors = validateAllAnswers({ ...COMPLETE, email: `lead@${domain}` });
       expect(errors.email).toBeDefined();
     }
+  });
+
+  it("no exige el desafío principal ni el sitio web (son opcionales)", () => {
+    const errors = validateAllAnswers({ ...COMPLETE, desafioPrincipal: "", sitioWeb: "" });
+    expect(isValid(errors)).toBe(true);
   });
 });
 
@@ -51,11 +90,11 @@ describe("hasValidRespuestas", () => {
 
   it("es inválido si falta una pregunta o el valor está fuera de rango", () => {
     const respuestasIncompletas = Object.fromEntries(
-      Object.entries(COMPLETE.respuestas).filter(([id]) => id !== "estrategia-p1")
+      Object.entries(COMPLETE.respuestas).filter(([id]) => id !== "tecnicas-p1")
     );
     expect(hasValidRespuestas({ ...COMPLETE, respuestas: respuestasIncompletas })).toBe(false);
     expect(
-      hasValidRespuestas({ ...COMPLETE, respuestas: { ...COMPLETE.respuestas, "estrategia-p1": 11 } })
+      hasValidRespuestas({ ...COMPLETE, respuestas: { ...COMPLETE.respuestas, "tecnicas-p1": 11 } })
     ).toBe(false);
   });
 });

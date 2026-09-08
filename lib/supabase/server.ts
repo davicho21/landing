@@ -15,10 +15,19 @@ export function getSupabaseServerClient() {
 }
 
 export type LeadRow = {
-  empresa: string;
+  nombres: string;
+  apellidos: string;
   email: string;
-  sector: string;
+  cargo: string;
+  area_desempeno: string;
+  empresa: string;
+  sitio_web: string;
+  pais: string;
+  ciudad: string;
+  industria: string;
+  num_colaboradores: string;
+  desafio_principal: string;
   respuestas: Record<string, number>;
-  puntajes_aspectos: unknown;
+  puntajes_areas: unknown;
   areas_criticas: unknown;
 };

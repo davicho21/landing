@@ -6,13 +6,15 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { Card } from "@/components/ui/card";
 import { EMPTY_ANSWERS, type DiagnosticAnswers } from "@/lib/types";
 import { validateStep, isValid, type FieldErrors } from "@/lib/validate-answers";
-import { WHEEL_ASPECTS } from "@/lib/wheel-config";
-import { StepEmpresa, StepEmail, StepSector, AspectStep } from "./steps";
+import { PENTAGON_AREAS } from "@/lib/pentagon-config";
+import { StepContacto, StepOrganizacion, StepDesafio, AspectStep } from "./steps";
 import { Confirmation } from "./confirmation";
+import { ProcessingAnimation } from "./processing-animation";
 
 const GENERAL_STEPS = 3;
-const TOTAL_STEPS = GENERAL_STEPS + WHEEL_ASPECTS.length;
-const DEFAULT_FILE_NAME = "informe-diagnostico-academia-referente.pdf";
+const TOTAL_STEPS = GENERAL_STEPS + PENTAGON_AREAS.length;
+const DEFAULT_FILE_NAME = "indice-madurez-formacion-corporativa-academia-referente.pdf";
+const MIN_PROCESSING_MS = 6000;
 
 type SubmitStatus = "idle" | "submitting" | "done" | "error";
 
@@ -23,6 +25,10 @@ function base64ToObjectUrl(base64: string): string {
     bytes[i] = binary.charCodeAt(i);
   }
   return URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function DiagnosticForm() {
@@ -49,14 +55,15 @@ export function DiagnosticForm() {
   async function submit() {
     setStatus("submitting");
     try {
-      const res = await fetch("/api/submit-lead", {
+      const requestPromise = fetch("/api/submit-lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(answers),
-      });
-      const data = await res.json().catch(() => null);
+      }).then(async (res) => ({ ok: res.ok, data: await res.json().catch(() => null) }));
 
-      if (!res.ok || !data?.saved) {
+      const [{ ok, data }] = await Promise.all([requestPromise, delay(MIN_PROCESSING_MS)]);
+
+      if (!ok || !data?.saved) {
         setStatus("error");
         return;
       }
@@ -95,6 +102,14 @@ export function DiagnosticForm() {
     if (step > 1) setStep(step - 1);
   }
 
+  if (status === "submitting") {
+    return (
+      <Card className="w-full max-w-xl p-8">
+        <ProcessingAnimation />
+      </Card>
+    );
+  }
+
   if (status === "done") {
     return (
       <Card className="w-full max-w-xl p-8">
@@ -104,16 +119,16 @@ export function DiagnosticForm() {
   }
 
   const isAspectStep = step > GENERAL_STEPS;
-  const aspecto = isAspectStep ? WHEEL_ASPECTS[step - GENERAL_STEPS - 1] : undefined;
+  const aspecto = isAspectStep ? PENTAGON_AREAS[step - GENERAL_STEPS - 1] : undefined;
 
   return (
     <Card className="w-full max-w-xl p-8">
       <div className="flex flex-col gap-8">
         <ProgressBar step={step} total={TOTAL_STEPS} />
 
-        {step === 1 && <StepEmpresa answers={answers} errors={errors} onChange={handleChange} />}
-        {step === 2 && <StepEmail answers={answers} errors={errors} onChange={handleChange} />}
-        {step === 3 && <StepSector answers={answers} errors={errors} onChange={handleChange} />}
+        {step === 1 && <StepContacto answers={answers} errors={errors} onChange={handleChange} />}
+        {step === 2 && <StepOrganizacion answers={answers} errors={errors} onChange={handleChange} />}
+        {step === 3 && <StepDesafio answers={answers} errors={errors} onChange={handleChange} />}
         {isAspectStep && aspecto && (
           <AspectStep
             aspecto={aspecto}
@@ -129,12 +144,10 @@ export function DiagnosticForm() {
         )}
 
         <div className="flex items-center justify-between">
-          <Button variant="outline" onClick={handleBack} disabled={step === 1 || status === "submitting"}>
+          <Button variant="outline" onClick={handleBack} disabled={step === 1}>
             Atrás
           </Button>
-          <Button onClick={handleNext} disabled={status === "submitting"}>
-            {status === "submitting" ? "Generando..." : step === TOTAL_STEPS ? "Enviar" : "Siguiente"}
-          </Button>
+          <Button onClick={handleNext}>{step === TOTAL_STEPS ? "Enviar" : "Siguiente"}</Button>
         </div>
       </div>
     </Card>

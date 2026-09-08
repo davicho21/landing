@@ -2,7 +2,7 @@ import { Document, Page, View, Text, StyleSheet, Image, Font } from "@react-pdf/
 import type { AreaCritica, RecommendationResult } from "@/lib/recommendation-engine";
 import type { Course } from "@/lib/course-catalog";
 import type { DiagnosticAnswers } from "@/lib/types";
-import { WHEEL_ASPECTS } from "@/lib/wheel-config";
+import { PENTAGON_AREAS } from "@/lib/pentagon-config";
 import { LOGO_LOCKUP_DARK_DATA_URI, LOGO_LOCKUP_LIGHT_DATA_URI } from "@/lib/pdf/logo-assets";
 import { RadarChart } from "@/lib/pdf/radar-chart";
 
@@ -15,6 +15,9 @@ const LOGO_LOCKUP_DARK = LOGO_LOCKUP_DARK_DATA_URI;
 const LOGO_LOCKUP_LIGHT = LOGO_LOCKUP_LIGHT_DATA_URI;
 const LOGO_ASPECT = 408 / 124;
 
+const CONTACT_EMAIL = "academia@consultorareferente.com";
+const CONTACT_PHONE = "+57 311 4648297";
+
 const COLORS = {
   bg: "#070b14",
   accent: "#6fffb0",
@@ -25,8 +28,8 @@ const COLORS = {
   bodyBg: "#ffffff",
   bodyText: "#111a30",
   bodyMuted: "#5b6478",
-  urgente: "#dc4545",
-  proceso: "#c98a1a",
+  critico: "#dc4545",
+  consolidacion: "#c98a1a",
 };
 
 const styles = StyleSheet.create({
@@ -38,6 +41,10 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+  },
+  coverLogoRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   bodyPage: {
     backgroundColor: COLORS.bodyBg,
@@ -85,21 +92,6 @@ const styles = StyleSheet.create({
     color: COLORS.wordmarkDark,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-  },
-  qaBlock: {
-    marginBottom: 10,
-    paddingLeft: 12,
-    borderLeft: `2px solid #e4e7f0`,
-  },
-  question: {
-    fontSize: 9,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    color: COLORS.bodyMuted,
-    marginBottom: 2,
-  },
-  answer: {
-    fontSize: 12,
   },
   card: {
     flexDirection: "row",
@@ -216,15 +208,15 @@ function withoutTrailingPeriod(text: string): string {
 }
 
 function tierColor(promedio: number): string {
-  if (promedio <= 4) return COLORS.urgente;
-  if (promedio <= 7) return COLORS.proceso;
+  if (promedio <= 4) return COLORS.critico;
+  if (promedio <= 7) return COLORS.consolidacion;
   return COLORS.accent;
 }
 
 function tierLabel(promedio: number): string {
-  if (promedio <= 4) return "Urgente";
-  if (promedio <= 7) return "En proceso";
-  return "Excelente";
+  if (promedio <= 4) return "Crítico";
+  if (promedio <= 7) return "En Consolidación";
+  return "Excelencia Estratégica";
 }
 
 function LogoLockup({ variant, height = 16 }: { variant: "light" | "dark"; height?: number }) {
@@ -236,7 +228,7 @@ function LogoLockup({ variant, height = 16 }: { variant: "light" | "dark"; heigh
 function PageFooter({ page }: { page: number }) {
   return (
     <View style={styles.footer} fixed>
-      <Text>Academia Referente — Rueda de Crecimiento Organizacional</Text>
+      <Text>Academia Referente — Índice de Madurez de Formación Corporativa</Text>
       <Text>{page} / 6</Text>
     </View>
   );
@@ -257,16 +249,24 @@ function BodyPageHeader({ eyebrow, title }: { eyebrow: string; title: string }) 
   );
 }
 
-function CourseCard({ course, accentColor }: { course: Course; accentColor: string }) {
+function CourseCard({
+  course,
+  accentColor,
+  compact = false,
+}: {
+  course: Course;
+  accentColor: string;
+  compact?: boolean;
+}) {
   return (
-    <View style={styles.card} wrap={false}>
+    <View style={[styles.card, compact ? { marginBottom: 5 } : {}]} wrap={false}>
       <View style={[styles.cardBar, { backgroundColor: accentColor }]} />
-      <View style={styles.cardBody}>
+      <View style={[styles.cardBody, compact ? { padding: 8 } : {}]}>
         <View style={styles.cardHeadRow}>
-          <Text style={styles.cardTitle}>{course.nombre}</Text>
+          <Text style={[styles.cardTitle, compact ? { fontSize: 10.5, marginBottom: 2 } : {}]}>{course.nombre}</Text>
           <Text style={styles.pill}>{course.duracionHoras}h</Text>
         </View>
-        <Text style={styles.cardMeta}>
+        <Text style={[styles.cardMeta, compact ? { fontSize: 9 } : {}]}>
           {course.modalidad} · Para: {course.beneficiario}
         </Text>
       </View>
@@ -357,11 +357,13 @@ export function DiagnosticReportDocument({
   });
 
   return (
-    <Document title="Rueda de Crecimiento Organizacional — Academia Referente">
+    <Document title="Índice de Madurez de Formación Corporativa — Academia Referente">
       {/* Página 1: Portada */}
       <Page size="A4" style={styles.coverPage}>
         <CoverBlobs />
-        <LogoLockup variant="light" />
+        <View style={styles.coverLogoRow}>
+          <LogoLockup variant="light" />
+        </View>
         <View>
           <View
             style={{
@@ -376,52 +378,59 @@ export function DiagnosticReportDocument({
             }}
           >
             <Text style={{ fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: "#06110a" }}>
-              Diagnóstico organizacional
+              Diagnóstico de talento corporativo
             </Text>
           </View>
-          <View style={{ marginBottom: 14 }}>
-            <Text style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.2 }}>
-              <Text style={{ color: COLORS.accent }}>Rueda</Text> de Crecimiento
+          <View style={{ marginBottom: 10 }}>
+            <Text style={{ fontSize: 27, fontWeight: 700, lineHeight: 1.2 }}>
+              <Text style={{ color: COLORS.accent }}>Índice</Text> de Madurez de
             </Text>
-            <Text style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.2 }}>Organizacional</Text>
+            <Text style={{ fontSize: 27, fontWeight: 700, lineHeight: 1.2 }}>Formación Corporativa</Text>
           </View>
-          <Text style={{ fontSize: 12, color: COLORS.muted }}>Preparado para: {answers.empresa}</Text>
-          <Text style={{ fontSize: 12, color: COLORS.muted }}>Sector: {answers.sector}</Text>
-          <Text style={{ fontSize: 12, color: COLORS.muted }}>Contacto: {answers.email}</Text>
-          <Text style={{ fontSize: 12, color: COLORS.muted }}>Fecha: {dateLabel}</Text>
+          <Text style={{ fontSize: 12, color: COLORS.muted, marginBottom: 14 }}>
+            Determina el nivel actual del desarrollo profesional dentro de la empresa
+          </Text>
+          <Text style={{ fontSize: 12, color: COLORS.muted }}>Empresa evaluada: {answers.empresa}</Text>
+          <Text style={{ fontSize: 12, color: COLORS.muted }}>Sector industrial: {answers.industria}</Text>
+          <Text style={{ fontSize: 12, color: COLORS.muted }}>Contacto clave: {answers.email}</Text>
+          <Text style={{ fontSize: 12, color: COLORS.muted }}>Fecha de emisión: {dateLabel}</Text>
         </View>
         <Text style={{ fontSize: 9, color: COLORS.muted }}>academiareferentes.com</Text>
       </Page>
 
-      {/* Página 2: Sobre el instrumento */}
+      {/* Página 2: Marco metodológico y las 5 dimensiones */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Metodología" title="Cómo leer este informe" />
+        <BodyPageHeader eyebrow="Metodología" title="Marco metodológico" />
 
         <Text style={{ fontSize: 11.5, lineHeight: 1.5, marginBottom: 14 }}>
-          Este diagnóstico está inspirado en la metodología de la &quot;rueda de la vida&quot;, adaptada al
-          contexto corporativo. Evalúa ocho áreas críticas que impulsan la competitividad y el bienestar de una
-          organización, cada una calificada de 1 a 10 con base en las respuestas de {withoutTrailingPeriod(answers.empresa)}.
+          Este diagnóstico no es una autoevaluación informal: es una herramienta de alineación estratégica
+          construida sobre estándares globales de desarrollo de talento — la taxonomía de habilidades del
+          Foro Económico Mundial, el modelo de aprendizaje 70:20:10 del Center for Creative Leadership, los
+          enfoques de organización basada en habilidades de consultoras como Deloitte, McKinsey y Gartner, y
+          la Taxonomía de Bloom. Evalúa cinco dimensiones estratégicas que determinan la competitividad y el
+          bienestar de una organización, cada una calificada de 1 a 10 con base en las respuestas de{" "}
+          {withoutTrailingPeriod(answers.empresa)}.
         </Text>
 
         <Text style={styles.sectionTitle}>Escala de medición</Text>
         <View style={styles.scaleRow}>
           <View style={[styles.scaleChip, { backgroundColor: "#fdecec" }]}>
-            <Text style={[styles.scaleChipLabel, { color: COLORS.urgente }]}>Urgente</Text>
-            <Text style={styles.scaleChipRange}>1 a 4 — requiere atención inmediata</Text>
+            <Text style={[styles.scaleChipLabel, { color: COLORS.critico }]}>Nivel Crítico</Text>
+            <Text style={styles.scaleChipRange}>1.0 a 4.0 — requiere plan de choque inmediato</Text>
           </View>
           <View style={[styles.scaleChip, { backgroundColor: "#fbf1e0" }]}>
-            <Text style={[styles.scaleChipLabel, { color: COLORS.proceso }]}>En proceso</Text>
-            <Text style={styles.scaleChipRange}>5 a 7 — funciona, pero no es óptima</Text>
+            <Text style={[styles.scaleChipLabel, { color: COLORS.consolidacion }]}>En Consolidación</Text>
+            <Text style={styles.scaleChipRange}>5.0 a 7.0 — funciona de forma parcial, con silos</Text>
           </View>
           <View style={[styles.scaleChip, { backgroundColor: "#e3fcef" }]}>
-            <Text style={[styles.scaleChipLabel, { color: "#1f8f56" }]}>Excelente</Text>
-            <Text style={styles.scaleChipRange}>8 a 10 — fortaleza consolidada</Text>
+            <Text style={[styles.scaleChipLabel, { color: "#1f8f56" }]}>Excelencia Estratégica</Text>
+            <Text style={styles.scaleChipRange}>8.0 a 10.0 — fortaleza consolidada, motor de crecimiento</Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Las 8 áreas evaluadas</Text>
+        <Text style={styles.sectionTitle}>Las 5 dimensiones evaluadas</Text>
         <View style={styles.aspectGrid}>
-          {WHEEL_ASPECTS.map((aspecto) => (
+          {PENTAGON_AREAS.map((aspecto) => (
             <View key={aspecto.id} style={styles.aspectGridItem}>
               <Text style={{ fontSize: 10.5, fontWeight: 700, marginBottom: 2 }}>{aspecto.nombre}</Text>
               <Text style={{ fontSize: 9, color: COLORS.bodyMuted, lineHeight: 1.3 }}>{aspecto.descripcion}</Text>
@@ -432,9 +441,9 @@ export function DiagnosticReportDocument({
         <PageFooter page={2} />
       </Page>
 
-      {/* Página 3: La rueda */}
+      {/* Página 3: El Pentágono de la Formación Corporativa */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Resultado" title="Tu Rueda de Crecimiento Organizacional" />
+        <BodyPageHeader eyebrow="Resultado" title="Tu Pentágono de Formación Corporativa" />
 
         <View style={{ alignItems: "center", marginBottom: 10 }}>
           <RadarChart aspectScores={aspectScores} />
@@ -457,16 +466,16 @@ export function DiagnosticReportDocument({
         <PageFooter page={3} />
       </Page>
 
-      {/* Página 4: Lectura del resultado */}
+      {/* Página 4: Análisis e interpretación ejecutiva */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Interpretación" title="Lectura de tu resultado" />
+        <BodyPageHeader eyebrow="Interpretación" title="Análisis e interpretación ejecutiva" />
 
         <Text style={{ fontSize: 12, lineHeight: 1.5, marginBottom: 16 }}>{forma.mensaje}</Text>
 
-        <Text style={styles.sectionTitle}>Áreas críticas identificadas</Text>
+        <Text style={styles.sectionTitle}>Áreas críticas prioritarias</Text>
         <Text style={{ fontSize: 10.5, color: COLORS.bodyMuted, lineHeight: 1.4, marginBottom: 10 }}>
-          Estas son las 2 áreas con menor puntaje. Recomendamos partir de aquí con metas SMART a corto plazo
-          para elevar su desempeño.
+          Estas son las 2 dimensiones con menor puntaje. Mantener estas brechas abiertas representa un riesgo
+          estratégico para la organización y debe atenderse primero.
         </Text>
         {areasCriticas.map((area, index) => (
           <AreaCriticaCard key={area.aspecto.id} area={area} orden={index + 1} />
@@ -475,35 +484,42 @@ export function DiagnosticReportDocument({
         <PageFooter page={4} />
       </Page>
 
-      {/* Página 5: Rutas de formación recomendadas */}
+      {/* Página 5: Ruta de formación personalizada */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Recomendación" title="Rutas de formación sugeridas" />
+        <BodyPageHeader eyebrow="Recomendación" title="Ruta de formación personalizada" />
 
         {areasCriticas.map((area, index) => (
           <View key={area.aspecto.id} wrap={false}>
-            <View style={[styles.card, { backgroundColor: COLORS.bg, marginTop: index === 0 ? 0 : 6 }]}>
+            <View style={[styles.card, { backgroundColor: COLORS.bg, marginTop: index === 0 ? 0 : 4, marginBottom: 5 }]}>
               <View style={[styles.cardBar, { backgroundColor: tierColor(area.promedio) }]} />
-              <View style={styles.cardBody}>
-                <Text style={{ fontSize: 13, fontWeight: 700, color: COLORS.textLight, marginBottom: 4 }}>
+              <View style={[styles.cardBody, { padding: 9 }]}>
+                <Text style={{ fontSize: 11.5, fontWeight: 700, color: COLORS.textLight, marginBottom: 2 }}>
                   {area.track.nombre}
                 </Text>
-                <Text style={{ fontSize: 10.5, color: COLORS.muted, lineHeight: 1.4 }}>{area.track.descripcion}</Text>
+                <Text style={{ fontSize: 9.5, color: COLORS.muted, lineHeight: 1.3 }}>{area.track.descripcion}</Text>
               </View>
             </View>
 
-            <CourseCard course={area.cursoPrincipal} accentColor={COLORS.accent} />
+            <CourseCard course={area.cursoPrincipal} accentColor={COLORS.accent} compact />
             {area.cursosComplementarios.map((curso) => (
-              <CourseCard key={curso.id} course={curso} accentColor={COLORS.accent2} />
+              <CourseCard key={curso.id} course={curso} accentColor={COLORS.accent2} compact />
             ))}
           </View>
         ))}
 
+        <Text style={[styles.sectionTitle, { marginTop: 10 }]}>Alineación curricular (metodología 70:20:10)</Text>
+        <Text style={{ fontSize: 9.5, color: COLORS.bodyMuted, lineHeight: 1.3 }}>
+          Estos cursos representan el 10% formal del aprendizaje. Para garantizar impacto real, recomendamos
+          habilitar también el 20% social — mentoría y traspaso de conocimiento entre pares — y el 70%
+          experiencial, aplicando lo aprendido directamente en el trabajo diario del equipo.
+        </Text>
+
         <PageFooter page={5} />
       </Page>
 
-      {/* Página 6: Próximos pasos */}
+      {/* Página 6: Plan de acción y próximos pasos */}
       <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Siguiente paso" title="Cómo avanzar con Academia Referente" />
+        <BodyPageHeader eyebrow="Siguiente paso" title="Plan de acción y próximos pasos" />
 
         <Text style={{ fontSize: 11.5, lineHeight: 1.5, marginBottom: 14 }}>
           Empieza por los cursos principales de tus dos áreas críticas:
@@ -524,21 +540,21 @@ export function DiagnosticReportDocument({
           </View>
         ))}
 
-        <Text style={styles.sectionTitle}>Plan de mejora sugerido</Text>
+        <Text style={styles.sectionTitle}>Plan de mejora en 3 pasos</Text>
         <StepItem
           number={1}
-          title="Comparte esta rueda con tu equipo directivo"
-          text="Discutan juntos los picos (fortalezas) y valles (riesgos) que muestra la figura."
+          title="Socializar el Pentágono de Formación"
+          text="Comparte este informe con el equipo directivo de la empresa para alinear la percepción del estado del talento."
         />
         <StepItem
           number={2}
-          title="Define metas SMART para las 2 áreas críticas"
-          text="Trabájenlas en una sesión de lluvia de ideas con el equipo involucrado en cada área."
+          title="Definir metas cortas (SMART)"
+          text="Prioriza acciones de formación para las dos áreas críticas antes de que afecten los resultados del negocio."
         />
         <StepItem
           number={3}
-          title="Agenda una llamada con Academia Referente"
-          text="Te ayudamos a convertir este diagnóstico en una ruta de formación con cronograma y modalidad definidos."
+          title="Sesión de co-diseño curricular"
+          text="Agenda una llamada estratégica gratuita con los consultores de Academia Referente para trazar un cronograma detallado de capacitación (modalidad virtual, presencial o híbrida)."
         />
 
         <View
@@ -550,9 +566,13 @@ export function DiagnosticReportDocument({
           }}
         >
           <Text style={{ fontSize: 12, fontWeight: 700, color: COLORS.textLight }}>
-            Escríbenos y sigamos la conversación
+            Agenda una llamada con Academia Referente
           </Text>
-          <Text style={{ fontSize: 10, color: COLORS.accent, marginTop: 2 }}>academiareferentes.com</Text>
+          <Text style={{ fontSize: 10, color: COLORS.accent, marginTop: 6 }}>academiareferentes.com</Text>
+          <Text style={{ fontSize: 10, color: COLORS.accent, marginTop: 2 }}>{CONTACT_EMAIL}</Text>
+          <Text style={{ fontSize: 10, color: COLORS.accent, marginTop: 2 }}>
+            {CONTACT_PHONE} — llamadas y WhatsApp
+          </Text>
         </View>
 
         <PageFooter page={6} />

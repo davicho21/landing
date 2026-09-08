@@ -1,78 +1,79 @@
 import { getTrackById, type Course, type TrainingTrack } from "./course-catalog";
-import { WHEEL_ASPECTS, type WheelAspect } from "./wheel-config";
+import { PENTAGON_AREAS, type PentagonArea } from "./pentagon-config";
 import type { DiagnosticAnswers } from "./types";
 
 export type AspectScore = {
-  aspecto: WheelAspect;
+  aspecto: PentagonArea;
   promedio: number;
 };
 
 export type AreaCritica = {
-  aspecto: WheelAspect;
+  aspecto: PentagonArea;
   promedio: number;
   track: TrainingTrack;
   cursoPrincipal: Course;
   cursosComplementarios: Course[];
 };
 
-export type FormaRueda = {
-  tipo: "armonica-alta" | "armonica-baja" | "irregular";
+export type FormaPentagono = {
+  tipo: "desbalanceado" | "armonico-alto" | "armonico-estancamiento";
   mensaje: string;
 };
 
 export type RecommendationResult = {
   aspectScores: AspectScore[];
   areasCriticas: AreaCritica[];
-  forma: FormaRueda;
+  forma: FormaPentagono;
 };
 
-const IRREGULARIDAD_UMBRAL = 3;
+const DESBALANCE_UMBRAL = 3;
 const MADUREZ_ALTA_UMBRAL = 6.5;
 
 export function computeAspectScores(answers: DiagnosticAnswers): AspectScore[] {
-  return WHEEL_ASPECTS.map((aspecto) => {
-    const [p1, p2] = aspecto.preguntas;
+  return PENTAGON_AREAS.map((aspecto) => {
+    const [p1, p2, p3] = aspecto.preguntas;
     const v1 = answers.respuestas[p1.id] ?? 0;
     const v2 = answers.respuestas[p2.id] ?? 0;
-    const promedio = Math.round(((v1 + v2) / 2) * 10) / 10;
+    const v3 = answers.respuestas[p3.id] ?? 0;
+    const promedio = Math.round(((v1 + v2 + v3) / 3) * 10) / 10;
     return { aspecto, promedio };
   });
 }
 
-function resolveForma(aspectScores: AspectScore[]): FormaRueda {
+function resolveForma(aspectScores: AspectScore[]): FormaPentagono {
   const valores = aspectScores.map((a) => a.promedio);
   const max = Math.max(...valores);
   const min = Math.min(...valores);
   const promedioGeneral = valores.reduce((sum, v) => sum + v, 0) / valores.length;
   const spread = max - min;
 
-  if (spread > IRREGULARIDAD_UMBRAL) {
+  if (spread > DESBALANCE_UMBRAL) {
     return {
-      tipo: "irregular",
+      tipo: "desbalanceado",
       mensaje:
-        "La figura resultante es irregular, con picos y valles marcados. Los picos son fortalezas que pueden apalancar el crecimiento; los valles representan riesgos críticos que frenan el desarrollo y deben atenderse primero.",
+        "La estructura de talento de la empresa tiene fuertes inconsistencias. Existen silos de excelencia operando junto a áreas críticas que sabotean el rendimiento general de la organización.",
     };
   }
 
   if (promedioGeneral >= MADUREZ_ALTA_UMBRAL) {
     return {
-      tipo: "armonica-alta",
+      tipo: "armonico-alto",
       mensaje:
-        "La figura resultante es un círculo armónico y amplio: la organización está en equilibrio y en un nivel alto de madurez en las ocho áreas evaluadas.",
+        "La organización se encuentra en un equilibrio saludable y maduro. Las cinco dimensiones se refuerzan mutuamente de manera integrada, creando un ecosistema propicio para el alto rendimiento.",
     };
   }
 
   return {
-    tipo: "armonica-baja",
+    tipo: "armonico-estancamiento",
     mensaje:
-      "La figura resultante es un círculo armónico pero pequeño: hay equilibrio entre las áreas, pero también un estancamiento general que requiere elevar los estándares en conjunto, no solo en un área puntual.",
+      "Existe equilibrio entre las áreas, pero en un nivel de desempeño modesto. Los equipos operan en una zona de confort que requiere elevar de manera integral las exigencias y estándares organizacionales.",
   };
 }
 
 function buildAreaCritica(aspectScore: AspectScore): AreaCritica {
   const track = getTrackById(aspectScore.aspecto.trackId);
   if (!track) {
-    throw new Error(`No se encontró la ruta de formación para el aspecto "${aspectScore.aspecto.id}".`);
+    throw new Error(`No se encontró la ruta de formación para el área "${aspectScore.aspecto.id}".`);
   }
 
   const [cursoPrincipal, ...cursosComplementarios] = track.cursos;
