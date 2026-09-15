@@ -1,6 +1,6 @@
 import { Document, Page, View, Text, StyleSheet, Image, Font } from "@react-pdf/renderer";
-import type { AreaCritica, RecommendationResult } from "@/lib/recommendation-engine";
-import type { Course } from "@/lib/course-catalog";
+import type { RecommendationResult } from "@/lib/recommendation-engine";
+import { getTrackById, type Course } from "@/lib/course-catalog";
 import type { DiagnosticAnswers } from "@/lib/types";
 import { PENTAGON_AREAS } from "@/lib/pentagon-config";
 import { LOGO_LOCKUP_DARK_DATA_URI, LOGO_LOCKUP_LIGHT_DATA_URI } from "@/lib/pdf/logo-assets";
@@ -17,6 +17,7 @@ const LOGO_ASPECT = 408 / 124;
 
 const CONTACT_EMAIL = "academia@consultorareferente.com";
 const CONTACT_PHONE = "+57 311 4648297";
+const TOTAL_PAGES = 10;
 
 const COLORS = {
   bg: "#070b14",
@@ -229,7 +230,84 @@ function PageFooter({ page }: { page: number }) {
   return (
     <View style={styles.footer} fixed>
       <Text>Academia Referente — Índice de Madurez de Formación Corporativa</Text>
-      <Text>{page} / 6</Text>
+      <Text>
+        {page} / {TOTAL_PAGES}
+      </Text>
+    </View>
+  );
+}
+
+type InsightTone = "alert" | "progress" | "strength";
+
+const INSIGHT_STYLES: Record<InsightTone, { bg: string; border: string; title: string }> = {
+  alert: { bg: "#fdecec", border: COLORS.critico, title: "Alerta: atención inmediata requerida" },
+  progress: { bg: "#fbf1e0", border: COLORS.consolidacion, title: "Oportunidad de optimización" },
+  strength: { bg: "#e3fcef", border: "#1f8f56", title: "Fortaleza para apalancar" },
+};
+
+function buildDimensionInsight(promedio: number, temasCriticos: string[], trackNombre: string): { tone: InsightTone; body: string } {
+  const temas = temasCriticos.join(", ");
+
+  if (promedio <= 4) {
+    return {
+      tone: "alert",
+      body: `Esta dimensión está en nivel crítico. Mantenerla sin atención representa un riesgo estratégico para la organización en el corto plazo. Se requiere un plan de choque formativo inmediato, priorizando: ${temas}. La ruta de formación sugerida es "${trackNombre}".`,
+    };
+  }
+
+  if (promedio <= 7) {
+    return {
+      tone: "progress",
+      body: `Esta dimensión es funcional, pero presenta inconsistencias o silos que limitan su impacto. Se recomienda estandarizar y optimizar las prácticas relacionadas con: ${temas}.`,
+    };
+  }
+
+  return {
+    tone: "strength",
+    body: `Esta dimensión es una fortaleza consolidada que puede actuar como motor de crecimiento. Se recomienda apalancarla mediante mentoría interna o proyectos piloto de innovación en: ${temas}.`,
+  };
+}
+
+function InsightBox({ tone, body }: { tone: InsightTone; body: string }) {
+  const style = INSIGHT_STYLES[tone];
+  return (
+    <View
+      style={{
+        backgroundColor: style.bg,
+        borderRadius: 8,
+        borderLeft: `4px solid ${style.border}`,
+        padding: 14,
+        marginTop: 12,
+      }}
+    >
+      <Text style={{ fontSize: 11, fontWeight: 700, color: style.border, marginBottom: 4 }}>{style.title}</Text>
+      <Text style={{ fontSize: 10, color: COLORS.bodyText, lineHeight: 1.4 }}>{body}</Text>
+    </View>
+  );
+}
+
+function ScoreBadge({ promedio }: { promedio: number }) {
+  const color = tierColor(promedio);
+  return (
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 4 }}>
+      <View
+        style={{
+          width: 64,
+          height: 64,
+          borderRadius: 32,
+          backgroundColor: color,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ fontSize: 20, fontWeight: 700, color: "#ffffff" }}>{promedio.toFixed(1)}</Text>
+      </View>
+      <View>
+        <Text style={{ fontSize: 9, textTransform: "uppercase", letterSpacing: 1, color: COLORS.bodyMuted }}>
+          Puntaje de la dimensión
+        </Text>
+        <Text style={{ fontSize: 15, fontWeight: 700, color }}>{tierLabel(promedio)}</Text>
+      </View>
     </View>
   );
 }
@@ -319,26 +397,6 @@ function CoverBlobs() {
   );
 }
 
-function AreaCriticaCard({ area, orden }: { area: AreaCritica; orden: number }) {
-  const color = tierColor(area.promedio);
-  return (
-    <View style={styles.card} wrap={false}>
-      <View style={[styles.cardBar, { backgroundColor: color }]} />
-      <View style={styles.cardBody}>
-        <View style={styles.cardHeadRow}>
-          <Text style={styles.cardTitle}>
-            {orden}. {area.aspecto.nombre}
-          </Text>
-          <Text style={[styles.pill, { backgroundColor: color, color: "#ffffff" }]}>
-            {area.promedio.toFixed(1)} / 10
-          </Text>
-        </View>
-        <Text style={{ fontSize: 10.5, color: COLORS.bodyMuted, lineHeight: 1.4 }}>{area.aspecto.descripcion}</Text>
-      </View>
-    </View>
-  );
-}
-
 export function DiagnosticReportDocument({
   answers,
   recommendation,
@@ -362,7 +420,7 @@ export function DiagnosticReportDocument({
       <Page size="A4" style={styles.coverPage}>
         <CoverBlobs />
         <View style={styles.coverLogoRow}>
-          <LogoLockup variant="light" />
+          <LogoLockup variant="light" height={92} />
         </View>
         <View>
           <View
@@ -395,7 +453,7 @@ export function DiagnosticReportDocument({
           <Text style={{ fontSize: 12, color: COLORS.muted }}>Contacto clave: {answers.email}</Text>
           <Text style={{ fontSize: 12, color: COLORS.muted }}>Fecha de emisión: {dateLabel}</Text>
         </View>
-        <Text style={{ fontSize: 9, color: COLORS.muted }}>academiareferentes.com</Text>
+        <Text style={{ fontSize: 27, fontWeight: 700, color: COLORS.accent }}>academiareferentes.com</Text>
       </Page>
 
       {/* Página 2: Marco metodológico y las 5 dimensiones */}
@@ -404,11 +462,9 @@ export function DiagnosticReportDocument({
 
         <Text style={{ fontSize: 11.5, lineHeight: 1.5, marginBottom: 14 }}>
           Este diagnóstico no es una autoevaluación informal: es una herramienta de alineación estratégica
-          construida sobre estándares globales de desarrollo de talento — la taxonomía de habilidades del
-          Foro Económico Mundial, el modelo de aprendizaje 70:20:10 del Center for Creative Leadership, los
-          enfoques de organización basada en habilidades de consultoras como Deloitte, McKinsey y Gartner, y
-          la Taxonomía de Bloom. Evalúa cinco dimensiones estratégicas que determinan la competitividad y el
-          bienestar de una organización, cada una calificada de 1 a 10 con base en las respuestas de{" "}
+          construida sobre estándares globales de desarrollo de talento y modelos reconocidos de gestión del
+          aprendizaje organizacional. Evalúa cinco dimensiones estratégicas que determinan la competitividad y
+          el bienestar de una organización, cada una calificada de 1 a 10 con base en las respuestas de{" "}
           {withoutTrailingPeriod(answers.empresa)}.
         </Text>
 
@@ -463,28 +519,65 @@ export function DiagnosticReportDocument({
           ))}
         </View>
 
+        <Text style={styles.sectionTitle}>Lectura general de la figura</Text>
+        <Text style={{ fontSize: 11, lineHeight: 1.5 }}>{forma.mensaje}</Text>
+
         <PageFooter page={3} />
       </Page>
 
-      {/* Página 4: Análisis e interpretación ejecutiva */}
-      <Page size="A4" style={styles.bodyPage}>
-        <BodyPageHeader eyebrow="Interpretación" title="Análisis e interpretación ejecutiva" />
+      {/* Páginas 4-8: una hoja de análisis por cada una de las 5 dimensiones */}
+      {aspectScores.map((score, index) => {
+        const track = getTrackById(score.aspecto.trackId);
+        const insight = buildDimensionInsight(score.promedio, score.aspecto.temasCriticos, track?.nombre ?? score.aspecto.nombre);
 
-        <Text style={{ fontSize: 12, lineHeight: 1.5, marginBottom: 16 }}>{forma.mensaje}</Text>
+        return (
+          <Page key={score.aspecto.id} size="A4" style={styles.bodyPage}>
+            <BodyPageHeader eyebrow={`Dimensión ${index + 1} de 5`} title={score.aspecto.nombre} />
 
-        <Text style={styles.sectionTitle}>Áreas críticas prioritarias</Text>
-        <Text style={{ fontSize: 10.5, color: COLORS.bodyMuted, lineHeight: 1.4, marginBottom: 10 }}>
-          Estas son las 2 dimensiones con menor puntaje. Mantener estas brechas abiertas representa un riesgo
-          estratégico para la organización y debe atenderse primero.
-        </Text>
-        {areasCriticas.map((area, index) => (
-          <AreaCriticaCard key={area.aspecto.id} area={area} orden={index + 1} />
-        ))}
+            <ScoreBadge promedio={score.promedio} />
 
-        <PageFooter page={4} />
-      </Page>
+            <Text style={styles.sectionTitle}>Qué mide esta dimensión</Text>
+            <Text style={{ fontSize: 11, lineHeight: 1.5 }}>{score.aspecto.descripcion}</Text>
 
-      {/* Página 5: Ruta de formación personalizada */}
+            <Text style={styles.sectionTitle}>Temas críticos evaluados</Text>
+            {score.aspecto.temasCriticos.map((tema) => (
+              <View key={tema} style={{ flexDirection: "row", gap: 6, marginBottom: 4 }}>
+                <Text style={{ fontSize: 10.5, color: COLORS.bodyMuted }}>•</Text>
+                <Text style={{ fontSize: 10.5, color: COLORS.bodyMuted, flex: 1, lineHeight: 1.35 }}>{tema}</Text>
+              </View>
+            ))}
+
+            <Text style={styles.sectionTitle}>Recomendación</Text>
+            <InsightBox tone={insight.tone} body={insight.body} />
+
+            {track && (
+              <>
+                <Text style={styles.sectionTitle}>Ruta de formación asociada</Text>
+                <Text style={{ fontSize: 11, fontWeight: 700, marginBottom: 2 }}>{track.nombre}</Text>
+                <Text style={{ fontSize: 9.5, color: COLORS.bodyMuted, lineHeight: 1.35, marginBottom: 6 }}>
+                  {track.descripcion}
+                </Text>
+                {track.cursos.map((curso) => (
+                  <View key={curso.id} style={{ flexDirection: "row", gap: 6, marginBottom: 3 }}>
+                    <Text style={{ fontSize: 9.5, color: COLORS.bodyMuted }}>•</Text>
+                    <Text style={{ fontSize: 9.5, color: COLORS.bodyMuted, flex: 1, lineHeight: 1.3 }}>
+                      {curso.nombre} ({curso.duracionHoras}h, {curso.modalidad.toLowerCase()})
+                    </Text>
+                  </View>
+                ))}
+              </>
+            )}
+
+            <Text style={{ fontSize: 8, color: COLORS.bodyMuted, marginTop: 16, fontStyle: "italic" }}>
+              Fundamento metodológico: {score.aspecto.fundamento}
+            </Text>
+
+            <PageFooter page={4 + index} />
+          </Page>
+        );
+      })}
+
+      {/* Página 9: Ruta de formación personalizada */}
       <Page size="A4" style={styles.bodyPage}>
         <BodyPageHeader eyebrow="Recomendación" title="Ruta de formación personalizada" />
 
@@ -514,10 +607,10 @@ export function DiagnosticReportDocument({
           experiencial, aplicando lo aprendido directamente en el trabajo diario del equipo.
         </Text>
 
-        <PageFooter page={5} />
+        <PageFooter page={9} />
       </Page>
 
-      {/* Página 6: Plan de acción y próximos pasos */}
+      {/* Página 10: Plan de acción y próximos pasos */}
       <Page size="A4" style={styles.bodyPage}>
         <BodyPageHeader eyebrow="Siguiente paso" title="Plan de acción y próximos pasos" />
 
@@ -575,7 +668,7 @@ export function DiagnosticReportDocument({
           </Text>
         </View>
 
-        <PageFooter page={6} />
+        <PageFooter page={10} />
       </Page>
     </Document>
   );

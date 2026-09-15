@@ -16,8 +16,7 @@ export default function Home() {
             Índice de Madurez de Formación Corporativa
           </span>
           <h1 className="text-4xl font-semibold leading-tight sm:text-5xl">
-            ¿Qué tan preparada está tu empresa para{" "}
-            <span className="text-brand-accent">crecer en 2026?</span>
+            Determina el <span className="text-brand-accent">nivel competitivo</span> de tus colaboradores
           </h1>
           <p className="max-w-xl text-brand-muted">
             Determina el nivel actual del desarrollo profesional dentro de tu empresa. Evalúa 5 dimensiones

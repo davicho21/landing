@@ -9,6 +9,8 @@ export type PentagonArea = {
   nombreCorto: string;
   descripcion: string;
   trackId: string;
+  temasCriticos: string[];
+  fundamento: string;
   preguntas: [PentagonQuestion, PentagonQuestion, PentagonQuestion];
 };
 
@@ -20,6 +22,13 @@ export const PENTAGON_AREAS: PentagonArea[] = [
     descripcion:
       "Nivel de competencia para operar software, automatizar con IA, ejecutar procesos sectoriales específicos y tomar decisiones basadas en datos.",
     trackId: "tecnicas",
+    temasCriticos: [
+      "Automatización de flujos de trabajo",
+      "Analítica de datos aplicada a la toma de decisiones",
+      "Alfabetización tecnológica en herramientas y software del negocio",
+    ],
+    fundamento:
+      "Conecta con las capacidades de valor empresarial del marco Talent-to-Value (McKinsey) y el dominio cognitivo de aplicación de la Taxonomía de Bloom.",
     preguntas: [
       {
         id: "tecnicas-p1",
@@ -45,6 +54,13 @@ export const PENTAGON_AREAS: PentagonArea[] = [
     descripcion:
       "Capacidad de comunicación interpersonal, sinergia grupal, asertividad en las relaciones internas y resolución dialogada de conflictos.",
     trackId: "blandas",
+    temasCriticos: [
+      "Comunicación asertiva bidireccional",
+      "Trabajo colaborativo basado en sinergias y confianza",
+      "Gestión de conflictos basada en el diálogo constructivo",
+    ],
+    fundamento:
+      "Responde a la categoría de autogestión y trabajo con personas del Foro Económico Mundial (WEF) y a los estándares de conducta relacional de Deloitte.",
     preguntas: [
       {
         id: "blandas-p1",
@@ -70,6 +86,13 @@ export const PENTAGON_AREAS: PentagonArea[] = [
     descripcion:
       "Integración del propósito corporativo en el día a día, equidad laboral, bienestar de los equipos y prevención del burnout operativo.",
     trackId: "cultura",
+    temasCriticos: [
+      "Alineación con el propósito empresarial",
+      "Diversidad, equidad e inclusión",
+      "Bienestar físico-emocional y políticas de desconexión digital",
+    ],
+    fundamento:
+      "Se asienta en el dominio afectivo de la Taxonomía de Bloom (asimilación de actitudes y valores), el cuidado de la atrofia cultural señalado por Gartner y la sostenibilidad del talento sin burnout.",
     preguntas: [
       {
         id: "cultura-p1",
@@ -95,6 +118,13 @@ export const PENTAGON_AREAS: PentagonArea[] = [
     descripcion:
       "Capacidad de los cuadros de mando para motivar de manera empática, dar feedback útil y habilitar redes horizontales de aprendizaje social.",
     trackId: "liderazgo",
+    temasCriticos: [
+      "Liderazgo inspirador y empático",
+      "Delegación con autonomía",
+      "Retroalimentación del desempeño (feedback) y mentoría de desarrollo",
+    ],
+    fundamento:
+      "Sustenta el 20% social del modelo de aprendizaje 70:20:10 (Center for Creative Leadership) y las competencias de desarrollo de otros del Foro Económico Mundial (WEF).",
     preguntas: [
       {
         id: "liderazgo-p1",
@@ -120,6 +150,13 @@ export const PENTAGON_AREAS: PentagonArea[] = [
     descripcion:
       "Flexibilidad estratégica del personal ante disrupciones de mercado, mentalidad de cambio continuo y asimilación crítica de tecnologías emergentes.",
     trackId: "innovacion",
+    temasCriticos: [
+      "Pensamiento crítico",
+      "Resolución proactiva de problemas",
+      "Agilidad ante el cambio y adopción crítica de tecnologías como la IA generativa",
+    ],
+    fundamento:
+      "Basado en el nivel de \"Creación\" de la Taxonomía de Bloom (ápice del dominio cognitivo), la resiliencia proactiva del Foro Económico Mundial (WEF) y la flexibilidad operativa corporativa.",
     preguntas: [
       {
         id: "innovacion-p1",
