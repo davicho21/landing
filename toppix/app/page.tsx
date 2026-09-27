@@ -1,8 +1,8 @@
-import { Donut } from "@/components/toppix/donut";
-import { DonutBuilder } from "@/components/toppix/donut-builder";
-import { Drip, Sparkle, ToppixLogo } from "@/components/toppix/brand";
-import { FAVORITES, formatPrice, recipePrice, totalCombinations, type DonutRecipe } from "@/lib/toppix/options";
-import { ADDRESS, HOURS, INSTAGRAM_HANDLE } from "@/lib/toppix/contact";
+import { Donut } from "@/components/donut";
+import { DonutBuilder } from "@/components/donut-builder";
+import { Drip, Sparkle, ToppixLogo } from "@/components/brand";
+import { FAVORITES, formatPrice, recipePrice, totalCombinations, type DonutRecipe } from "@/lib/options";
+import { ADDRESS, HOURS, INSTAGRAM_HANDLE } from "@/lib/contact";
 
 const COMBOS = Math.floor(totalCombinations() / 1000) * 1000;
 

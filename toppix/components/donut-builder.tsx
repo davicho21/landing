@@ -15,8 +15,8 @@ import {
   type DonutRecipe,
   type Option,
   type ToppingKind,
-} from "@/lib/toppix/options";
-import { WHATSAPP_NUMBER } from "@/lib/toppix/contact";
+} from "@/lib/options";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 
 const STEPS = [
   { n: 1, label: "Base", color: "bg-tp-butter" },

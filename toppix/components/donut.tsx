@@ -5,7 +5,7 @@ import {
   findOption,
   type DonutRecipe,
   type ToppingKind,
-} from "@/lib/toppix/options";
+} from "@/lib/options";
 
 const C = 100; // centre of the 200×200 viewBox
 
