@@ -29,3 +29,9 @@ npm run test    # Vitest: motor de reglas y validación de respuestas
 npm run lint
 npm run build
 ```
+
+## Toppix Donas (`/toppix`)
+
+Sitio de la tienda de donas Toppix con un configurador interactivo "Crea tu dona" (`components/toppix/`,
+`lib/toppix/`). Los datos de contacto (WhatsApp, Instagram, dirección, horario) se editan en
+`lib/toppix/contact.ts` y los precios/opciones en `lib/toppix/options.ts`.
