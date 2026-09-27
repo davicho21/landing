@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Toppix Donas es un proyecto Next.js independiente con su propia configuración.
+    "toppix/**",
   ]),
 ]);
 
